@@ -29,3 +29,9 @@ opaque drawFPS : (posX : Nat) → (posY : Nat) → IO Unit
 
 @[extern "setTargetFPS"]
 opaque setTargetFPS : (fps : Nat) → IO Unit
+
+@[extern "drawCircleV"]
+opaque drawCircleV : (center : Vector2) → (radius : Float) → (color : Color) → IO Unit
+
+@[extern "isKeyDown"]
+opaque isKeyDown : (key : Nat) → IO Bool

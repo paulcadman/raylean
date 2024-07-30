@@ -11,11 +11,15 @@ static inline Color color_of_arg(lean_obj_arg color) {
   return (Color) {r,g,b,a};
 }
 
-lean_obj_res getRandomValue(uint32_t min, uint32_t max) {
-  // SUPPORT_RPRAND_GENERATOR is set however the prand generator always
-  // returns the same value in this context
-  // uint32_t r = (rand() % (abs((long)max - min) + 1) + min);
-  return lean_io_result_mk_ok(lean_box(min));
+static inline Vector2 vector2_of_arg(lean_obj_arg vector2) {
+  double x = lean_ctor_get_float(vector2, 0);
+  double y = lean_ctor_get_float(vector2, 8);
+  return (Vector2) {x,y};
+}
+
+lean_obj_res getRandomValue(uint32_t min, uint32_t max) __attribute__((optnone)) {
+  // BUG: This always seems to return `min`
+  return lean_io_result_mk_ok(lean_box_uint32(GetRandomValue(min, max)));
 }
 
 lean_obj_res initWindow(lean_obj_arg width, lean_obj_arg height,
@@ -66,4 +70,16 @@ lean_obj_res drawText(b_lean_obj_arg text, lean_obj_arg posX,
            lean_uint32_of_nat_mk(posY), lean_uint32_of_nat_mk(fontSize),
            color_of_arg(color));
   return IO_UNIT;
+}
+
+lean_obj_res drawCircleV(lean_obj_arg center, double radius, lean_obj_arg color) {
+  Vector2 centerV = vector2_of_arg(center);
+  Color colorArg = color_of_arg(color);
+  DrawCircleV(centerV, radius, colorArg);
+  return IO_UNIT;
+}
+
+lean_obj_res isKeyDown(lean_obj_arg key) {
+  bool res = IsKeyDown(lean_uint32_of_nat_mk(key));
+  return lean_io_result_mk_ok(lean_box(res));
 }

@@ -1,3 +1,9 @@
+structure Vector2 where
+  x : Float
+  y : Float
+
+instance : Inhabited Vector2 := ⟨{x := 0, y := 0}⟩
+
 structure Color where
   r : UInt8
   g : UInt8
@@ -16,3 +22,12 @@ def black  := { r:=0, g:=0, b:=0, a:=255 : Color }
 def transparent  := { r:=0, g:=0, b:=0, a:=0 : Color }
 
 end Color
+
+namespace Key
+
+def right : Nat := 262
+def left : Nat := 263
+def down : Nat := 264
+def up : Nat := 265
+
+end Key
