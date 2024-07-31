@@ -1,7 +1,7 @@
 import «Raylib»
 
-private def screenWidth : Nat := 800
-private def screenHeight : Nat := 450
+private def screenWidth : Nat := 1000
+private def screenHeight : Nat := 600
 private def fps : Nat := 120
 
 private def cubePosition : Vector3 := { x := 0, y := 0, z := 0 : Vector3 }
