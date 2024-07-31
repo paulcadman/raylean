@@ -1,3 +1,3 @@
 import «Examples»
 
-def main : IO Unit := inputKeys
+def main : IO Unit := camera3D

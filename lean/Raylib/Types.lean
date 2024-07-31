@@ -2,7 +2,28 @@ structure Vector2 where
   x : Float
   y : Float
 
-instance : Inhabited Vector2 := ⟨{x := 0, y := 0}⟩
+structure Vector3 where
+  x : Float
+  y : Float
+  z : Float
+
+inductive CameraProjection where
+  | perspective : CameraProjection
+  | orthographic : CameraProjection
+
+structure Camera3D where
+  position : Vector3
+  target : Vector3
+  up : Vector3
+  fovy : Float
+  projection : CameraProjection
+
+inductive CameraMode where
+  | custom : CameraMode
+  | free : CameraMode
+  | orbital : CameraMode
+  | firstPerson : CameraMode
+  | thridPerson : CameraMode
 
 structure Color where
   r : UInt8
@@ -25,6 +46,7 @@ end Color
 
 namespace Key
 
+def space : Nat := 32
 def right : Nat := 262
 def left : Nat := 263
 def down : Nat := 264
