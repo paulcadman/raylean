@@ -14,22 +14,22 @@ static inline Color color_of_arg(lean_obj_arg color) {
 
 static inline Vector2 vector2_of_arg(lean_obj_arg vector2) {
   double x = lean_ctor_get_float(vector2, 0);
-  double y = lean_ctor_get_float(vector2, 8);
+  double y = lean_ctor_get_float(vector2, sizeof(double));
   return (Vector2){x, y};
 }
 
 static inline Vector3 vector3_of_arg(lean_obj_arg vector3) {
   double x = lean_ctor_get_float(vector3, 0);
-  double y = lean_ctor_get_float(vector3, 8);
-  double z = lean_ctor_get_float(vector3, 16);
+  double y = lean_ctor_get_float(vector3, sizeof(double));
+  double z = lean_ctor_get_float(vector3, sizeof(double) * 2);
   return (Vector3){x, y, z};
 }
 
 static inline lean_object *vector3_obj_mk(Vector3 vector3) {
-  lean_object *vector3_obj = lean_alloc_ctor(0, 0, 24);
+  lean_object *vector3_obj = lean_alloc_ctor(0, 0, sizeof(double) * 3);
   lean_ctor_set_float(vector3_obj, 0, vector3.x);
-  lean_ctor_set_float(vector3_obj, 8, vector3.y);
-  lean_ctor_set_float(vector3_obj, 16, vector3.z);
+  lean_ctor_set_float(vector3_obj, sizeof(double), vector3.y);
+  lean_ctor_set_float(vector3_obj, sizeof(double) * 2, vector3.z);
   return vector3_obj;
 }
 
@@ -39,7 +39,7 @@ static inline Camera3D camera3D_of_arg(lean_obj_arg camera) {
   Vector3 up = vector3_of_arg(lean_ctor_get(camera, 2));
   float fovy = lean_ctor_get_float(camera, sizeof(void *) * 3);
   CameraProjection projection =
-      lean_ctor_get_uint8(camera, sizeof(void *) * 3 + 8);
+      lean_ctor_get_uint8(camera, sizeof(void *) * 3 + sizeof(double));
   return (Camera3D){position, target, up, fovy, projection};
 }
 
@@ -48,7 +48,7 @@ void camera_obj_init(lean_obj_arg camera_arg, Camera3D camera) {
   lean_ctor_set(camera_arg, 1, vector3_obj_mk(camera.target));
   lean_ctor_set(camera_arg, 2, vector3_obj_mk(camera.up));
   lean_ctor_set_float(camera_arg, sizeof(void *) * 3, camera.fovy);
-  lean_ctor_set_uint8(camera_arg, sizeof(void *) * 3 + 8, camera.projection);
+  lean_ctor_set_uint8(camera_arg, sizeof(void *) * 3 + sizeof(double), camera.projection);
 }
 
 void camera_obj_update(lean_obj_arg camera_arg, Camera3D camera) {
@@ -59,7 +59,7 @@ void camera_obj_update(lean_obj_arg camera_arg, Camera3D camera) {
 }
 
 static inline lean_object *camera_obj_mk(Camera3D camera) {
-  lean_object *camera_obj = lean_alloc_ctor(0, 3, 9);
+  lean_object *camera_obj = lean_alloc_ctor(0, 3, sizeof(double) + 1);
   camera_obj_init(camera_obj, camera);
   return camera_obj;
 }
