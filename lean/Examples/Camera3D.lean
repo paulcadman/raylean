@@ -21,11 +21,10 @@ private def doRender : IO Unit := do
       camera := { camera with target := cubePosition }
     renderFrame do
       clearBackground Color.white
-      beginMode3D camera
-      drawCube cubePosition 2 2 2 Color.red
-      drawCubeWires cubePosition 2 2 2 Color.blue
-      drawGrid 10 1
-      endMode3D
+      renderWithCamera camera do
+        drawCube cubePosition 2 2 2 Color.red
+        drawCubeWires cubePosition 2 2 2 Color.blue
+        drawGrid 10 1
       drawFPS (screenWidth - 100) 10
       drawText "Welcome to the third dimension" 10 40 20 Color.black
 
