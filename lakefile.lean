@@ -16,7 +16,7 @@ lean_lib «Examples» where
   precompileModules := true
 
 @[default_target]
-lean_exe «lean-raylib» where
+lean_exe «raylib-lean» where
   root := `Main
 
 target raylib_bindings.o pkg : FilePath := do
@@ -28,5 +28,5 @@ target raylib_bindings.o pkg : FilePath := do
 
 extern_lib libleanffi pkg := do
   let ffiO ← raylib_bindings.o.fetch
-  let name := nameToStaticLib "leanraylib"
+  let name := nameToStaticLib "rayliblean"
   buildStaticLib (pkg.nativeLibDir / name) #[ffiO]
