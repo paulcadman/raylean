@@ -30,7 +30,6 @@ structure Color where
   g : UInt8
   b : UInt8
   a : UInt8 := 255
-  deriving Repr, Inhabited
 
 namespace Color
 
