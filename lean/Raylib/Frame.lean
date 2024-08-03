@@ -1,4 +1,4 @@
-import «Raylib».Basic
+import «Raylib».Core
 
 def renderFrame (mkFrame : IO Unit) : IO Unit := do
     beginDrawing
