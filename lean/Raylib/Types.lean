@@ -7,15 +7,30 @@ structure Vector3 where
   y : Float
   z : Float
 
+structure Camera2D where
+  /-- Camera offset (displacement from target) -/
+  position : Vector2
+  /-- Camera target (rotation and zoom origin) -/
+  target : Vector2
+  /-- Camera rotation in degrees -/
+  rotation : Float
+  /-- Camera zoom (scaling), should be 1.0f by default -/
+  zoom : Float
+
 inductive CameraProjection where
   | perspective
   | orthographic
 
 structure Camera3D where
+  /-- Camera position -/
   position : Vector3
+  /-- Camera target it looks-at -/
   target : Vector3
+  /-- Camera up vector (rotation over its axis) -/
   up : Vector3
+  /-- Camera field-of-view aperture in Y (degrees) in perspective, used as near plane width in orthographic -/
   fovy : Float
+  /-- Camera projection: CAMERA_PERSPECTIVE or CAMERA_ORTHOGRAPHIC -/
   projection : CameraProjection
 
 inductive CameraMode where
@@ -26,9 +41,13 @@ inductive CameraMode where
   | thridPerson
 
 structure Color where
+  /-- Color red value -/
   r : UInt8
+  /-- Color green value -/
   g : UInt8
+  /-- Color blue value -/
   b : UInt8
+  /-- Color alpha value -/
   a : UInt8 := 255
 
 namespace Color
