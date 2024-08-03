@@ -43,7 +43,7 @@ static inline Camera3D camera3D_of_arg(lean_obj_arg camera) {
   return (Camera3D){position, target, up, fovy, projection};
 }
 
-void camera_obj_init(lean_obj_arg camera_arg, Camera3D camera) {
+void camera3D_obj_init(lean_obj_arg camera_arg, Camera3D camera) {
   lean_ctor_set(camera_arg, 0, vector3_obj_mk(camera.position));
   lean_ctor_set(camera_arg, 1, vector3_obj_mk(camera.target));
   lean_ctor_set(camera_arg, 2, vector3_obj_mk(camera.up));
@@ -51,17 +51,25 @@ void camera_obj_init(lean_obj_arg camera_arg, Camera3D camera) {
   lean_ctor_set_uint8(camera_arg, sizeof(void *) * 3 + sizeof(double), camera.projection);
 }
 
-void camera_obj_update(lean_obj_arg camera_arg, Camera3D camera) {
+void camera3D_obj_update(lean_obj_arg camera_arg, Camera3D camera) {
   lean_dec_ref(lean_ctor_get(camera_arg, 0));
   lean_dec_ref(lean_ctor_get(camera_arg, 1));
   lean_dec_ref(lean_ctor_get(camera_arg, 2));
-  camera_obj_init(camera_arg, camera);
+  camera3D_obj_init(camera_arg, camera);
 }
 
-static inline lean_object *camera_obj_mk(Camera3D camera) {
+static inline lean_object *camera3D_obj_mk(Camera3D camera) {
   lean_object *camera_obj = lean_alloc_ctor(0, 3, sizeof(double) + 1);
-  camera_obj_init(camera_obj, camera);
+  camera3D_obj_init(camera_obj, camera);
   return camera_obj;
+}
+
+static inline Camera2D camera2D_of_arg(lean_obj_arg camera) {
+  Vector2 position = vector2_of_arg(lean_ctor_get(camera, 0));
+  Vector2 target = vector2_of_arg(lean_ctor_get(camera, 1));
+  double rotation = lean_ctor_get_float(camera, sizeof(void *) * 2);
+  double zoom = lean_ctor_get_float(camera, sizeof(void *) * 2 + sizeof(double));
+  return (Camera2D){position, target, rotation, zoom};
 }
 
 lean_obj_res getRandomValue(uint32_t min, uint32_t max)
@@ -132,6 +140,16 @@ lean_obj_res isKeyDown(lean_obj_arg key) {
   return lean_io_result_mk_ok(lean_box(res));
 }
 
+lean_obj_res endMode2D(void) {
+  EndMode2D();
+  return IO_UNIT;
+}
+
+lean_obj_res beginMode2D(lean_obj_arg camera) {
+  BeginMode2D(camera2D_of_arg(camera));
+  return IO_UNIT;
+}
+
 lean_obj_res endMode3D(void) {
   EndMode3D();
   return IO_UNIT;
@@ -170,10 +188,10 @@ lean_obj_res updateCamera(lean_obj_arg camera_arg, uint8_t mode) {
   Camera3D camera = camera3D_of_arg(camera_arg);
   UpdateCamera(&camera, mode);
   if (lean_is_exclusive(camera_arg)) {
-    camera_obj_update(camera_arg, camera);
+    camera3D_obj_update(camera_arg, camera);
     return lean_io_result_mk_ok(camera_arg);
   } else {
     lean_dec_ref(camera_arg);
-    return lean_io_result_mk_ok(camera_obj_mk(camera));
+    return lean_io_result_mk_ok(camera3D_obj_mk(camera));
   }
 }
