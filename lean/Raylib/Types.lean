@@ -1,11 +1,22 @@
 structure Vector2 where
   x : Float
   y : Float
+  deriving Inhabited
 
 structure Vector3 where
   x : Float
   y : Float
   z : Float
+
+structure Rectangle where
+  /-- Rectangle top-left corner position x -/
+  x : Float
+  /-- Rectangle top-left corner position y -/
+  y : Float
+  /-- Rectangle width -/
+  width : Float
+  /-- Rectangle height -/
+  height : Float
 
 structure Camera2D where
   /-- Camera offset (displacement from target) -/

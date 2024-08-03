@@ -64,6 +64,15 @@ opaque updateCamera : (camera : Camera3D) → (mode : CameraMode) → IO Camera3
 @[extern "drawCircleV"]
 opaque drawCircleV : (center : Vector2) → (radius : Float) → (color : Color) → IO Unit
 
+@[extern "drawRectangleRec"]
+opaque drawRectangleRec : (rectangle : Rectangle) → (color : Color) → IO Unit
+
+/- Screen-space-related functions -/
+
+/-- Get the world space position for a 2d camera screen space position -/
+@[extern "getScreenToWorld2D"]
+opaque getScreenToWorld2D : (position : Vector2) → (camera : Camera2D) → Vector2
+
 /- Text drawing functions -/
 
 @[extern "drawFPS"]
@@ -82,4 +91,3 @@ opaque drawCubeWires : (position : Vector3) → (width : Float) → (height : Fl
 
 @[extern "drawGrid"]
 opaque drawGrid : (slices : Nat) → (spacing : Float) → IO Unit
-

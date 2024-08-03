@@ -18,6 +18,13 @@ static inline Vector2 vector2_of_arg(lean_obj_arg vector2) {
   return (Vector2){x, y};
 }
 
+static inline lean_object *vector2_obj_mk(Vector2 vector2) {
+  lean_object *vector2_obj = lean_alloc_ctor(0, 0, sizeof(double) * 2);
+  lean_ctor_set_float(vector2_obj, 0, vector2.x);
+  lean_ctor_set_float(vector2_obj, sizeof(double), vector2.y);
+  return vector2_obj;
+}
+
 static inline Vector3 vector3_of_arg(lean_obj_arg vector3) {
   double x = lean_ctor_get_float(vector3, 0);
   double y = lean_ctor_get_float(vector3, sizeof(double));
@@ -31,6 +38,14 @@ static inline lean_object *vector3_obj_mk(Vector3 vector3) {
   lean_ctor_set_float(vector3_obj, sizeof(double), vector3.y);
   lean_ctor_set_float(vector3_obj, sizeof(double) * 2, vector3.z);
   return vector3_obj;
+}
+
+static inline Rectangle rectangle_of_arg(lean_obj_arg rectangle) {
+  double x = lean_ctor_get_float(rectangle, 0);
+  double y = lean_ctor_get_float(rectangle, sizeof(double));
+  double width = lean_ctor_get_float(rectangle, sizeof(double) * 2);
+  double height = lean_ctor_get_float(rectangle, sizeof(double) * 3);
+  return (Rectangle){x, y, width, height};
 }
 
 static inline Camera3D camera3D_of_arg(lean_obj_arg camera) {
@@ -48,7 +63,8 @@ void camera3D_obj_init(lean_obj_arg camera_arg, Camera3D camera) {
   lean_ctor_set(camera_arg, 1, vector3_obj_mk(camera.target));
   lean_ctor_set(camera_arg, 2, vector3_obj_mk(camera.up));
   lean_ctor_set_float(camera_arg, sizeof(void *) * 3, camera.fovy);
-  lean_ctor_set_uint8(camera_arg, sizeof(void *) * 3 + sizeof(double), camera.projection);
+  lean_ctor_set_uint8(camera_arg, sizeof(void *) * 3 + sizeof(double),
+                      camera.projection);
 }
 
 void camera3D_obj_update(lean_obj_arg camera_arg, Camera3D camera) {
@@ -68,7 +84,8 @@ static inline Camera2D camera2D_of_arg(lean_obj_arg camera) {
   Vector2 position = vector2_of_arg(lean_ctor_get(camera, 0));
   Vector2 target = vector2_of_arg(lean_ctor_get(camera, 1));
   double rotation = lean_ctor_get_float(camera, sizeof(void *) * 2);
-  double zoom = lean_ctor_get_float(camera, sizeof(void *) * 2 + sizeof(double));
+  double zoom =
+      lean_ctor_get_float(camera, sizeof(void *) * 2 + sizeof(double));
   return (Camera2D){position, target, rotation, zoom};
 }
 
@@ -194,4 +211,15 @@ lean_obj_res updateCamera(lean_obj_arg camera_arg, uint8_t mode) {
     lean_dec_ref(camera_arg);
     return lean_io_result_mk_ok(camera3D_obj_mk(camera));
   }
+}
+
+lean_obj_res drawRectangleRec(lean_obj_arg rectangle_arg,
+                              lean_obj_arg color_arg) {
+  DrawRectangleRec(rectangle_of_arg(rectangle_arg), color_of_arg(color_arg));
+  return IO_UNIT;
+}
+
+lean_obj_res getScreenToWorld2D(lean_obj_arg vector2_arg, lean_obj_arg camera_arg) {
+  Vector2 worldV = GetScreenToWorld2D(vector2_of_arg(vector2_arg), camera2D_of_arg(camera_arg));
+  return vector2_obj_mk(worldV);
 }
