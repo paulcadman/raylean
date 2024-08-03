@@ -8,8 +8,8 @@ structure Vector3 where
   z : Float
 
 inductive CameraProjection where
-  | perspective : CameraProjection
-  | orthographic : CameraProjection
+  | perspective
+  | orthographic
 
 structure Camera3D where
   position : Vector3
@@ -19,11 +19,11 @@ structure Camera3D where
   projection : CameraProjection
 
 inductive CameraMode where
-  | custom : CameraMode
-  | free : CameraMode
-  | orbital : CameraMode
-  | firstPerson : CameraMode
-  | thridPerson : CameraMode
+  | custom
+  | free
+  | orbital
+  | firstPerson
+  | thridPerson
 
 structure Color where
   r : UInt8
