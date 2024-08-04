@@ -17,6 +17,8 @@ structure GameState where
 structure GameEnv where
   items : List EnvItem
 
+abbrev GameM : Type -> Type := StateT GameState (ReaderT GameEnv IO)
+
 def modifyPlayer [MonadState GameState m] (f : Player → Player) : m Unit :=
   modify (fun s => { s with player := f s.player })
 
@@ -61,5 +63,3 @@ def setOffset [MonadState GameState m] (v : Vector2) : m Unit :=
 
 def setTarget [MonadState GameState m] (v : Vector2) : m Unit :=
   modifyCamera (fun c => { c with target := v })
-
-abbrev GameM : Type -> Type := StateT GameState (ReaderT GameEnv IO)
