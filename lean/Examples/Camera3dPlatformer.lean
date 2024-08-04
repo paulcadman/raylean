@@ -61,7 +61,7 @@ def updatePlayer (delta : Float) : GameM Unit := do
            setPositionY item.rect.y
            failure
 
-  let hitObstacle : Bool := (<- resolveCollisions.run).isNone
+  let hitObstacle : Bool := (← resolveCollisions.run).isNone
   if not hitObstacle then
     modifyPositionY (· + (← get).player.speed * delta)
     modifySpeed (· + gravity.toFloat * delta)
@@ -70,16 +70,16 @@ def updatePlayer (delta : Float) : GameM Unit := do
     setCanJump true
 
 private def updateCameraCenter : GameM Unit := do
-  setTarget (<- get).player.position
+  setTarget (← get).player.position
 
 private def doRender : GameM Unit := do
   while not (← windowShouldClose) do
     let deltaTime ← getFrameTime
     updatePlayer deltaTime
-    modifyZoom (· + (<- getMouseWheelMove) * 0.05)
+    modifyZoom (· + (← getMouseWheelMove) * 0.05)
 
-    if (<- get).camera.zoom > 3 then setZoom 3
-      else if (<- get).camera.zoom < 0.25 then setZoom 0.25
+    if (← get).camera.zoom > 3 then setZoom 3
+      else if (← get).camera.zoom < 0.25 then setZoom 0.25
 
     updateCameraCenter
 
