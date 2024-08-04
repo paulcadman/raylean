@@ -20,7 +20,7 @@ structure Rectangle where
 
 structure Camera2D where
   /-- Camera offset (displacement from target) -/
-  position : Vector2
+  offset : Vector2
   /-- Camera target (rotation and zoom origin) -/
   target : Vector2
   /-- Camera rotation in degrees -/

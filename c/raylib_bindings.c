@@ -81,12 +81,12 @@ static inline lean_object *camera3D_obj_mk(Camera3D camera) {
 }
 
 static inline Camera2D camera2D_of_arg(lean_obj_arg camera) {
-  Vector2 position = vector2_of_arg(lean_ctor_get(camera, 0));
+  Vector2 offset = vector2_of_arg(lean_ctor_get(camera, 0));
   Vector2 target = vector2_of_arg(lean_ctor_get(camera, 1));
   double rotation = lean_ctor_get_float(camera, sizeof(void *) * 2);
   double zoom =
       lean_ctor_get_float(camera, sizeof(void *) * 2 + sizeof(double));
-  return (Camera2D){position, target, rotation, zoom};
+  return (Camera2D){offset, target, rotation, zoom};
 }
 
 lean_obj_res getRandomValue(uint32_t min, uint32_t max)
