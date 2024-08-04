@@ -44,6 +44,9 @@ opaque endMode3D : IO Unit
 @[extern "setTargetFPS"]
 opaque setTargetFPS : (fps : Nat) → IO Unit
 
+@[extern "getFrameTime"]
+opaque getFrameTime : IO Float
+
 /- Random values generation functions -/
 
 @[extern "getRandomValue"]

@@ -223,3 +223,7 @@ lean_obj_res getScreenToWorld2D(lean_obj_arg vector2_arg, lean_obj_arg camera_ar
   Vector2 worldV = GetScreenToWorld2D(vector2_of_arg(vector2_arg), camera2D_of_arg(camera_arg));
   return vector2_obj_mk(worldV);
 }
+
+lean_obj_res getFrameTime(void) {
+  return lean_io_result_mk_ok(lean_box_float(GetFrameTime()));
+}
