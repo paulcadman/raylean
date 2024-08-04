@@ -69,32 +69,36 @@ def updatePlayer (delta : Float) : GameM Unit := do
   else
     setCanJump true
 
-private def updateCameraCenter : GameM Unit := do
+private def updateCameraCenter [Monad m] [MonadState GameState m] : m Unit := do
   setTarget (← get).player.position
 
-private def doRender : GameM Unit := do
-  while not (← windowShouldClose) do
-    let deltaTime ← getFrameTime
-    updatePlayer deltaTime
-    modifyZoom (· + (← getMouseWheelMove) * 0.05)
+private def renderEnvironment : GameM Unit := do
+  forM (← read).items fun item => drawRectangleRec item.rect item.color
 
+private def renderPlayer : GameM Unit := do
+  let p := (← get).player
+  drawRectangleRec
+    { x := p.position.x - player_width / 2
+    , y := p.position.y - player_height
+    , width := player_width
+    , height := player_height }
+    Color.red
+
+private def updateZoom [Monad m] [MonadState GameState m] (offset: Float) : m Unit := do
+    modifyZoom (· + offset)
     if (← get).camera.zoom > 3 then setZoom 3
       else if (← get).camera.zoom < 0.25 then setZoom 0.25
 
+private def doRender : GameM Unit := do
+  while not (← windowShouldClose) do
+    updatePlayer (← getFrameTime)
+    updateZoom ((← getMouseWheelMove) * 0.05)
     updateCameraCenter
-
     renderFrame do
       clearBackground Color.Raylib.lightgray
       renderWithCamera2D (← get).camera do
-        forM (← read).items fun item => do
-            drawRectangleRec item.rect item.color
-        let p := (← get).player
-        drawRectangleRec {
-          x := p.position.x - player_width / 2,
-          y := p.position.y - player_height,
-          width := player_width,
-          height := player_height }
-          Color.red
+        renderEnvironment
+        renderPlayer
   closeWindow
 
 def camera3dPlatformer : IO Unit := do
