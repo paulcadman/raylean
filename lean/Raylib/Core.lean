@@ -57,6 +57,11 @@ opaque getRandomValue : UInt32 → UInt32 → IO UInt32
 @[extern "isKeyDown"]
 opaque isKeyDown : (key : Nat) → IO Bool
 
+/- Input-related functions: mouse -/
+
+@[extern "getMouseWheelMove"]
+opaque getMouseWheelMove : IO Float
+
 /- Camera System Functions -/
 
 @[extern "updateCamera"]

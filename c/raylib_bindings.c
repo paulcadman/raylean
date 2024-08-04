@@ -227,3 +227,7 @@ lean_obj_res getScreenToWorld2D(lean_obj_arg vector2_arg, lean_obj_arg camera_ar
 lean_obj_res getFrameTime(void) {
   return lean_io_result_mk_ok(lean_box_float(GetFrameTime()));
 }
+
+lean_obj_res getMouseWheelMove(void) {
+  return lean_io_result_mk_ok(lean_box_float(GetMouseWheelMove()));
+}
