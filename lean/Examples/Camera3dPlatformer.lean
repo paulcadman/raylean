@@ -40,14 +40,6 @@ def initGameEnv : GameEnv := { items := [
     color := Color.Raylib.gray },
 ] }
 
-def two : Nat :=
-  let block : StateT Nat Id Nat := do
-    modify (· + 1)
-    modify (· + 1)
-    return (← get)
-  let (result, _finalState) := block 0
-  result
-
 def updatePlayer (delta : Float) : GameM Unit := do
   if (← isKeyDown Key.left) then modifyPositionX (· - player_horizontal_speed * delta)
   if (← isKeyDown Key.right) then modifyPositionX (· + player_horizontal_speed * delta)
