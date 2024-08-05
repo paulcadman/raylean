@@ -1,6 +1,11 @@
 raylib_release_path := join(justfile_directory(), "lib")
 raylib_src_path := join(justfile_directory(), "raylib-5.0", "src")
 
+[private]
+default:
+    @just --list
+
+# build only the raylib static library
 build_raylib:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -24,17 +29,22 @@ build_raylib:
             CUSTOM_CFLAGS="-target arm64-apple-macos11 -DGL_SILENCE_DEPRECATION -fno-objc-msgsend-selector-stubs"
     fi
 
+# build both the raylib library and the Lake project
 build: build_raylib
     lake build
 
+# clean only the Lake project
 clean:
     lake clean
 
+# clean only the raylib build
 clean_raylib:
     make -C {{raylib_src_path}} clean
     rm -rf {{raylib_release_path}}
 
+# clean both the raylib build and the Lake project
 clean_all: clean clean_raylib
 
+# run the demo executable
 run: build
     .lake/build/bin/raylib-lean
