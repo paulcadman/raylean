@@ -60,6 +60,7 @@ structure Color where
   b : UInt8
   /-- Color alpha value -/
   a : UInt8 := 255
+  deriving BEq
 
 namespace Color
 
@@ -110,3 +111,12 @@ def down : Nat := 264
 def up : Nat := 265
 
 end Key
+
+inductive MouseButton where
+  | left
+  | right
+  | middle
+  | side
+  | extra
+  | forward
+  | back
