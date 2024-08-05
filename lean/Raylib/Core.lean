@@ -59,6 +59,12 @@ opaque isKeyDown : (key : Nat) → IO Bool
 
 /- Input-related functions: mouse -/
 
+@[extern "isMouseButtonPressed"]
+opaque isMouseButtonPressed : (button : MouseButton) → IO Bool
+
+@[extern "getMousePosition"]
+opaque getMousePosition : IO Vector2
+
 @[extern "getMouseWheelMove"]
 opaque getMouseWheelMove : IO Float
 

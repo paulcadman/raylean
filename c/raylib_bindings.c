@@ -237,3 +237,11 @@ lean_obj_res checkCollisionPointRec(lean_obj_arg vector2_arg, lean_obj_arg recta
   Rectangle r = rectangle_of_arg(rectangle_arg);
   return lean_io_result_mk_ok(lean_box(CheckCollisionPointRec(v, r)));
 }
+
+lean_obj_res isMouseButtonPressed(uint8_t button) {
+  return lean_io_result_mk_ok(lean_box(IsMouseButtonPressed(button)));
+}
+
+lean_obj_res getMousePosition(void) {
+  return lean_io_result_mk_ok(vector2_obj_mk(GetMousePosition()));
+}
