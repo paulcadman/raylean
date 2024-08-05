@@ -22,11 +22,8 @@ target raylib_bindings.o pkg : FilePath := do
   let oFile := pkg.buildDir / "c" / "raylib_bindings.o"
   let srcJob ← inputFile <| pkg.dir / "c" / "raylib_bindings.c"
   let raylibInclude := pkg.dir / "raylib-5.0" / "include"
-  let weakArgs := #["-I", (← getLeanIncludeDir).toString,
-                    "-I", s!"{raylibInclude}",
-                    -- The clang headers are specified with the `isystem` flag so that warnings are ignored
-                    "-isystem", ((← getLeanIncludeDir) / "clang").toString]
-  buildO oFile srcJob weakArgs #["-fPIC"] (← getLeanCc) getLeanTrace
+  let weakArgs := #["-I", s!"{raylibInclude}"]
+  buildLeanO oFile srcJob weakArgs #["-fPIC"]
 
 extern_lib libleanffi pkg := do
   let ffiO ← raylib_bindings.o.fetch
