@@ -1,5 +1,6 @@
 raylib_release_path := join(justfile_directory(), "lib")
 raylib_src_path := join(justfile_directory(), "raylib-5.0", "src")
+extra_raylib_config_flags := "-DSUPPORT_FILEFORMAT_SVG"
 
 [private]
 default:
@@ -26,7 +27,7 @@ build_raylib:
             PLATFORM=PLATFORM_DESKTOP \
             RAYLIB_LIBTYPE=STATIC \
             RAYLIB_RELEASE_PATH={{raylib_release_path}} \
-            CUSTOM_CFLAGS="-target arm64-apple-macos11 -DGL_SILENCE_DEPRECATION -fno-objc-msgsend-selector-stubs"
+            CUSTOM_CFLAGS="{{extra_raylib_config_flags}} -target arm64-apple-macos11 -DGL_SILENCE_DEPRECATION -fno-objc-msgsend-selector-stubs"
     fi
 
 # build both the raylib library and the Lake project
