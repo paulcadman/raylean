@@ -75,6 +75,11 @@ opaque drawCircleV : (center : Vector2) → (radius : Float) → (color : Color)
 @[extern "drawRectangleRec"]
 opaque drawRectangleRec : (rectangle : Rectangle) → (color : Color) → IO Unit
 
+/- Basic shapes collision detection functions -/
+
+@[extern "checkCollisionPointRec"]
+opaque checkCollisionPointRec : (point : Vector2) → (rect : Rectangle) -> IO Bool
+
 /- Screen-space-related functions -/
 
 /-- Get the world space position for a 2d camera screen space position -/

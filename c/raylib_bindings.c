@@ -231,3 +231,9 @@ lean_obj_res getFrameTime(void) {
 lean_obj_res getMouseWheelMove(void) {
   return lean_io_result_mk_ok(lean_box_float(GetMouseWheelMove()));
 }
+
+lean_obj_res checkCollisionPointRec(lean_obj_arg vector2_arg, lean_obj_arg rectangle_arg) {
+  Vector2 v = vector2_of_arg(vector2_arg);
+  Rectangle r = rectangle_of_arg(rectangle_arg);
+  return lean_io_result_mk_ok(lean_box(CheckCollisionPointRec(v, r)));
+}
