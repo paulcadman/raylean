@@ -14,7 +14,7 @@ lean_lib «Examples» where
 lean_exe «raylib-lean» where
   root := `Main
   moreLinkArgs :=
-    #[ "raylib-5.0/src/libraylib.a"
+    #[ "lib/libraylib.a"
      , "-isysroot", "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
      , "-framework", "IOKit"
      , "-framework", "Cocoa"
