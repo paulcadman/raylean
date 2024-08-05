@@ -1,5 +1,8 @@
 build:
     lake build
 
-run:
+clean:
+    lake clean
+
+run: build
     .lake/build/bin/raylib-lean
