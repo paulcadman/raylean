@@ -10,6 +10,10 @@ For now only macOS is supported.
 
 ### Dependencies
 
+#### [Lean](https://lean-lang.org)
+
+Use the [official documentation](https://lean-lang.org/lean4/doc/quickstart.html) to setup Lean.
+
 #### [Just command runner](https://github.com/casey/just)
 
 Install using [Homebrew](https://brew.sh) with:
