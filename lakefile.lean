@@ -5,9 +5,7 @@ open System Lake DSL
 def raylibPath := "/opt/homebrew/opt/raylib"
 
 package «lean-raylib» where
-  moreLinkArgs := #["-lraylib", s!"-L{raylibPath}/lib/"]
   srcDir := "lean"
-  -- add package configuration options here
 
 lean_lib «Raylib» where
   precompileModules := true
@@ -18,12 +16,16 @@ lean_lib «Examples» where
 @[default_target]
 lean_exe «raylib-lean» where
   root := `Main
+  moreLinkArgs := #["-lraylib", s!"-L{raylibPath}/lib/"]
 
 target raylib_bindings.o pkg : FilePath := do
   let oFile := pkg.buildDir / "c" / "raylib_bindings.o"
   let srcJob ← inputFile <| pkg.dir / "c" / "raylib_bindings.c"
-  -- The clang headers are specified with the `isystem` flag so that warnings are ignored
-  let weakArgs := #["-I", (← getLeanIncludeDir).toString, "-I", s!"{raylibPath}/include", "-isystem", ((← getLeanIncludeDir) / "clang").toString]
+  let raylibInclude := pkg.dir / "raylib-5.0" / "include"
+  let weakArgs := #["-I", (← getLeanIncludeDir).toString,
+                    "-I", s!"{raylibInclude}",
+                    -- The clang headers are specified with the `isystem` flag so that warnings are ignored
+                    "-isystem", ((← getLeanIncludeDir) / "clang").toString]
   buildO oFile srcJob weakArgs #["-fPIC"] (← getLeanCc) getLeanTrace
 
 extern_lib libleanffi pkg := do
