@@ -15,9 +15,12 @@ jobs:
     steps:
       - uses: extractions/setup-just@v2
 
-      - uses: leanprover/lean-action@v1
-        with:
-          auto-config: false
+      - name: install elan
+        run: |
+            set -o pipefail
+            curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-aarch64-apple-darwin.tar.gz | tar xz
+            ./elan-init -y --no-modify-path --default-toolchain none
+            echo "$HOME/.elan/bin" >> $GITHUB_PATH
 
       - name: query clang
         run: clang --version
