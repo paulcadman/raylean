@@ -23,7 +23,7 @@ lean_exe «raylib-lean» where
 
 target raylib_bindings.o pkg : FilePath := do
   let oFile := pkg.buildDir / "c" / "raylib_bindings.o"
-  let srcJob ← inputFile <| pkg.dir / "c" / "raylib_bindings.c"
+  let srcJob ← inputTextFile <| pkg.dir / "c" / "raylib_bindings.c"
   let raylibInclude := pkg.dir / "raylib-5.0" / "src"
   let weakArgs := #["-I", s!"{raylibInclude}"]
   buildLeanO oFile srcJob weakArgs #["-fPIC"]
