@@ -58,8 +58,8 @@ def demoRenderInfos : Array DemoRenderInfo :=
       drawRectangleRec rect color
       drawText demoInfo.title (Nat.div screenWidth 3) (yOffset + Nat.div optionHeight 2) textSize selectorTextColor
     let isClicked (pos : Vector2) := checkCollisionPointRec pos rect
-    {start := demoInfo.start, render, isClicked : DemoRenderInfo}
-  (allElements Demo).mapIdx f
+    {start := demoInfo.start, render, isClicked}
+  Demo.all.mapIdx f
 
 /-- Start the selector --/
 def start : IO Unit := do
@@ -74,10 +74,7 @@ def start : IO Unit := do
       clearBackground Color.green
       for i in demoRenderInfos do i.render
   closeWindow
-
-  match launchDemo with
-    | some start => start
-    | _ => return ()
+  if let some start := launchDemo then start
 
 end Selector
 
