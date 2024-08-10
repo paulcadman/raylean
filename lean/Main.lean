@@ -1,3 +1,3 @@
-import «Examples»
+import «Examples».Selector
 
-def main : IO Unit := camera2DPlatformer
+def main : IO Unit := selector
