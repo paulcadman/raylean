@@ -14,9 +14,12 @@ elab "makeLenses" structIdent:ident : command => do
     let fieldNameIdent := mkIdent field.fieldName
     let some decl := env.find? (field.projFn)
       | throwErrorAt structIdent s!"Could not find project function {field.projFn}"
-    let some fieldTypeName := (← liftTermElabM (liftMetaM (forallTelescope decl.type fun _ body => pure body.getAppFn.constName?)))
+    let (some fieldTypeName, some fieldTypeArgs) := (← liftTermElabM (liftMetaM (
+             forallTelescope decl.type fun _ body
+               => pure (body.getAppFn.constName?, body.getAppArgs.mapM (·.constName?)))))
       | throwErrorAt structIdent "Not a structure name"
-    let fieldTypeNameIdent := mkIdent fieldTypeName
+    let d ← fieldTypeArgs.mapM fun argName => `($(mkIdent argName))
+    let fieldTypeNameIdent := Syntax.mkCApp fieldTypeName d
     let lensName := mkIdent <| structIdent.raw.getId ++ Name.mkSimple "lens" ++ field.fieldName
     let newVal := mkIdent <| Name.mkSimple "newVal"
     let l ←
@@ -46,8 +49,15 @@ structure Person' where
   name : Name'
   age : Nat
 
+structure Group where
+  people : List Person'
+
+
 makeLenses Name'
 makeLenses Person'
+
+set_option trace.Elab.definition true in
+makeLenses Group
 
 def exampleView' : IO Unit :=
   let person : Person' := { name := {firstname := "Alice", surname := "H"}, age := 30 }
