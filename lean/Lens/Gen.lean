@@ -4,12 +4,19 @@ import Lean
 
 namespace Elab
 
+/-
+makeLenses T` creates a lens for each field of the structure `T`.
+The name of the lens is the same as the corresponding projection function.
+The lenses are declared in the namespace T.Lens.
+-/
 open Lean Elab Command Term Meta in
-elab "makeLenses" structIdent:ident : command => do
+elab "makeLenses " structIdent:ident : command => do
   let name ← resolveGlobalConstNoOverload structIdent
   let env ← getEnv
   let some info := getStructureInfo? env name
     | throwErrorAt structIdent "Not a structure"
+  let mut defs : Array Syntax := #[]
+  let lensNs := mkIdent <| structIdent.raw.getId ++ Name.mkSimple "Lens"
   for field in info.fieldInfo do
     let fieldNameIdent := mkIdent field.fieldName
     let some decl := env.find? (field.projFn)
@@ -20,7 +27,7 @@ elab "makeLenses" structIdent:ident : command => do
       | throwErrorAt structIdent "Not a structure name"
     let d ← fieldTypeArgs.mapM fun argName => `($(mkIdent argName))
     let fieldTypeNameIdent := Syntax.mkCApp fieldTypeName d
-    let lensName := mkIdent <| structIdent.raw.getId ++ Name.mkSimple "lens" ++ field.fieldName
+    let lensName := mkIdent field.fieldName
     let newVal := mkIdent <| Name.mkSimple "newVal"
     let l ←
       `(fun {f} [Functor f] g p =>
@@ -28,9 +35,12 @@ elab "makeLenses" structIdent:ident : command => do
           (fun $newVal =>
             { p with $fieldNameIdent:ident := $newVal})
             (g p.$fieldNameIdent:ident))
-    let defn ←
-      `(def $lensName : @Lens $(mkIdent name) $(mkIdent name) $fieldTypeNameIdent $fieldTypeNameIdent := $l)
-    elabCommand <| defn
+    defs := defs.push
+      (← `(def $lensName : @Lens $(mkIdent name) $(mkIdent name) $fieldTypeNameIdent $fieldTypeNameIdent := $l))
+  elabCommand (← `(namespace $lensNs))
+  for d in defs do
+    elabCommand d
+  elabCommand (← `(end $lensNs))
 
 end Elab
 
@@ -55,23 +65,25 @@ structure Group where
 
 makeLenses Name'
 makeLenses Person'
-
-set_option trace.Elab.definition true in
 makeLenses Group
+
+open Person'.Lens
+open Name'.Lens
+open Group.Lens
 
 def exampleView' : IO Unit :=
   let person : Person' := { name := {firstname := "Alice", surname := "H"}, age := 30 }
-  let personName := person ^. Person'.lens.name ∘ Name'.lens.firstname
+  let personName := person ^. name ∘ firstname
   IO.println s!"Name: {personName}"
 
 def exampleSet' : IO Unit :=
   let person := { name := { firstname := "Alice", surname := "H"}, age := 30 }
-  let updatedPerson := set (Person'.lens.name ∘ Name'.lens.firstname) "Bob" person
+  let updatedPerson := set (name ∘ firstname) "Bob" person
   IO.println s!"Updated name: {updatedPerson.name.firstname}"
 
 def exampleOver' : IO Unit :=
   let person := { name := {firstname := "Alice", surname := "H"} , age := 30 }
-  let updatedPerson := over (Person'.lens.name ∘ Name'.lens.firstname) (String.append · "zzzSmith") person
+  let updatedPerson := over (name ∘ firstname) (String.append · "zzzSmith") person
   IO.println s!"Modified name: {updatedPerson.name.firstname}"
 
 end Example
