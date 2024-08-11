@@ -10,7 +10,7 @@ The name of the lens is the same as the corresponding projection function.
 The lenses are declared in the namespace T.Lens.
 -/
 open Lean Elab Command Term Meta in
-elab "makeLenses " structIdent:ident : command => do
+elab "makeLenses" structIdent:ident : command => do
   let name ← resolveGlobalConstNoOverload structIdent
   let env ← getEnv
   let some info := getStructureInfo? env name
@@ -61,7 +61,6 @@ structure Person' where
 
 structure Group where
   people : List Person'
-
 
 makeLenses Name'
 makeLenses Person'
