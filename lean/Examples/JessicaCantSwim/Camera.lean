@@ -5,14 +5,11 @@ namespace Examples.JessicaCantSwim.Camera
 structure Camera where
   camera : Camera2D
 
-def Camera.init (target: Vector2) (screenWidth: Nat) (screenHeight: Nat): Camera :=
+def Camera.init (player: Vector2) (screenWidth: Nat) (screenHeight: Nat): Camera :=
   {
     camera := {
-      target := target,
-      offset := {
-        x := screenWidth.toFloat / 2,
-        y := screenHeight.toFloat / 2,
-      }
+      target := {x := 0, y := 0},
+      offset := {x := 0, y := 0},
       rotation := 0,
       zoom := 1,
     }
