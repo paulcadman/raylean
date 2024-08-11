@@ -32,6 +32,14 @@ def Player.update (p: Player) (delta : Float) (keys: List Keys.Keys): Id Player 
   if (keys.contains Keys.Down) then p := p.modifyPositionY (· + move)
   return p
 
+def Player.bounds (p: Player): Rectangle :=
+  {
+    x := p.position.x - p.radius,
+    y := p.position.y + p.radius,
+    width := p.radius * 2,
+    height := p.radius * 2,
+  }
+
 -- IO is required, since we are drawing
 def Player.render (p: Player): IO Unit := do
   drawCircleV p.position p.radius Color.green

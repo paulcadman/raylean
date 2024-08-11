@@ -33,11 +33,17 @@ def Ocean.update (ocean: Ocean) (delta : Float) : Id Ocean := do
     speed := speed,
   }
 
-def Ocean.render (ocean: Ocean): IO Unit := do
-  let rect: Rectangle := {
+private def Ocean.box (ocean: Ocean): Rectangle :=
+  {
     x := ocean.maxWidth - ocean.width,
     y := 0,
     width := ocean.width,
     height := ocean.height,
   }
+
+def Ocean.bounds (ocean: Ocean): Rectangle :=
+  ocean.box
+
+def Ocean.render (ocean: Ocean): IO Unit := do
+  let rect: Rectangle := ocean.box
   drawRectangleRec rect Color.blue
