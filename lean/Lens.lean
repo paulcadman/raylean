@@ -1,2 +1,2 @@
 import Lens.Basic
-import Lens.Gen
+import Lens.Elab
