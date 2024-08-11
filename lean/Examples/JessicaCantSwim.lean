@@ -1,37 +1,30 @@
 import «Raylib»
 
-import Examples.JessicaCantSwim.Types
+import Examples.JessicaCantSwim.GameState
+import Examples.JessicaCantSwim.Player
 
 namespace JessicaCantSwim
 
-open JessicaCantSwim.Types
+open Examples.JessicaCantSwim.GameState
+open Examples.JessicaCantSwim.Player
 
 private def screenWidth : Nat := 800
 private def screenHeight : Nat := 450
-private def player_speed : Float := 200
-private def player_radius : Float := 10
 private def fps : Nat := 60
-
-def updatePlayer (delta : Float) : GameM Unit := do
-  if (← isKeyDown Key.left) then modifyPositionX (· - player_speed * delta)
-  if (← isKeyDown Key.right) then modifyPositionX (· + player_speed * delta)
-  if (← isKeyDown Key.up) then modifyPositionY (· - player_speed * delta)
-  if (← isKeyDown Key.down) then modifyPositionY (· + player_speed * delta)
-
-private def renderPlayer : GameM Unit := do
-  let p := (← get).player
-  drawCircleV p.position player_radius Color.green
 
 private def doRender : GameM Unit := do
   while not (← windowShouldClose) do
-    updatePlayer (← getFrameTime)
+    update (← getFrameTime)
     renderFrame do
       clearBackground Color.Raylib.lightgray
       renderWithCamera2D (← get).camera do
-        renderPlayer
+        render
   closeWindow
 
-def initPlayer : Player := { position := {x := 400, y := 200} }
+def initPlayer : Player :=
+  {
+    position := {x := 400, y := 200}
+  }
 
 def initCamera : Camera2D := {
   target := initPlayer.position,
@@ -40,7 +33,11 @@ def initCamera : Camera2D := {
   zoom := 1
 }
 
-def initGameState : GameState := { player := initPlayer, camera := initCamera }
+def initGameState : GameState :=
+  {
+    player := initPlayer,
+    camera := initCamera,
+  }
 
 def main : IO Unit := do
   initWindow screenWidth screenHeight "Jessica Can't Swim"
