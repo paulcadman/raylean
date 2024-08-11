@@ -7,7 +7,10 @@ private def speed : Float := 200
 private def radius : Float := 10
 
 structure Player where
-  position : Vector2
+  private position : Vector2
+
+def Player.init (position: Vector2): Player :=
+  { position := position }
 
 private def Player.modifyPositionX (p: Player) (f : Float → Float) : Player :=
   { p with position := ⟨ f p.position.x, p.position.y ⟩}
