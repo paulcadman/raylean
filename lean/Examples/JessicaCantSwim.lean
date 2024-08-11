@@ -1,27 +1,26 @@
 import «Raylib»
 
 import Examples.JessicaCantSwim.Game
+import Examples.JessicaCantSwim.Keys
 
 namespace JessicaCantSwim
 
 open Examples.JessicaCantSwim.Game
-
-private def screenWidth : Nat := 800
-private def screenHeight : Nat := 450
-private def startPosition : Vector2 := { x := 200, y := 200}
-private def fps : Nat := 60
-
-private def doRender : GameM Unit := do
-  while not (← windowShouldClose) do
-    Game.update (← getFrameTime)
-    renderFrame do
-      Game.render
-  closeWindow
+open Examples.JessicaCantSwim.Keys
 
 def main : IO Unit := do
-  let initGame := Game.init startPosition screenWidth screenHeight
+  let screenWidth: Nat := 800
+  let screenHeight : Nat := 450
+  let startPosition : Vector2 := { x := 200, y := 200 }
   initWindow screenWidth screenHeight "Jessica Can't Swim"
-  setTargetFPS fps
-  doRender |>.run' initGame
+  setTargetFPS 60
+  let mut game := Game.init startPosition screenWidth screenHeight
+  while not (← windowShouldClose) do
+    let delta ← getFrameTime
+    let keys ← getKeys
+    game := game.update delta keys
+    renderFrame do
+      game.render
+  closeWindow
 
 end JessicaCantSwim

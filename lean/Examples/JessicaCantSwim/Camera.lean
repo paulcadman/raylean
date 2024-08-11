@@ -1,4 +1,4 @@
-import «Raylib»
+import Raylib.Types
 
 namespace Examples.JessicaCantSwim.Camera
 

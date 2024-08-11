@@ -20,21 +20,16 @@ def Game.init (position: Vector2) (screenWidth: Nat) (screenHeight: Nat): Game :
     camera := Camera.init position screenWidth screenHeight,
   }
 
-abbrev GameM : Type -> Type := StateT Game IO
+def Game.update (game: Game) (delta : Float) (keys: List Keys.Keys): Game :=
+  {
+    player := game.player.update delta keys,
+    camera := game.camera,
+  }
 
-def Game.update (delta : Float) : GameM Unit := do
-  let keys: List Keys <- getKeys
-  let game: Game <- get
-  let player: Player := game.player
-  let player': Player := player.update delta keys
-  modify (fun s => { s with player := player' })
-  return ()
-
-def Game.render: GameM Unit := do
-  let game: Game <- get
+def Game.render (game: Game): IO Unit := do
   let player: Player := game.player
   clearBackground Color.Raylib.lightgray
-  renderWithCamera2D (← get).camera.camera do
+  renderWithCamera2D game.camera.camera do
     player.render
   return ()
 
