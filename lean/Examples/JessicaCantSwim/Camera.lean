@@ -1,11 +1,11 @@
 import Raylib.Types
 
-namespace Examples.JessicaCantSwim.Camera
+namespace Camera
 
 structure Camera where
   camera : Camera2D
 
-def Camera.init (player: Vector2) (screenWidth: Nat) (screenHeight: Nat): Camera :=
+def init (player: Vector2) (screenWidth: Nat) (screenHeight: Nat): Camera :=
   {
     camera := {
       target := {x := 0, y := 0},
@@ -15,4 +15,4 @@ def Camera.init (player: Vector2) (screenWidth: Nat) (screenHeight: Nat): Camera
     }
   }
 
-end Examples.JessicaCantSwim.Camera
+end Camera

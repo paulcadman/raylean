@@ -1,6 +1,6 @@
 import «Raylib»
 
-namespace Examples.JessicaCantSwim.Keys
+namespace Keys
 
 inductive Keys where
   | Down: Keys
@@ -21,4 +21,4 @@ def getKeys: IO (List Keys) := do
     then keys := keys.push Keys.Right
   return keys.toList
 
-end Examples.JessicaCantSwim.Keys
+end Keys
