@@ -22,8 +22,6 @@ class Entity (E : Type u) where
 inductive Elem where
   | mk (elem: Σ α, Entity α × α): Elem
 
-def Entities := List Elem
-
 def wrap [Entity E] (e: E): Elem :=
   Elem.mk ⟨ E, ⟨ inferInstance, e ⟩ ⟩
 
@@ -49,33 +47,37 @@ instance : Entity Elem where
   bounds := Elem.bounds
   render := Elem.render
 
+inductive Entities where
+  | mk (elems: List Elem): Entities
+
 def Entities.forM [Monad m] : Entities → (Elem → m PUnit) → m PUnit
-  | [], _ => pure ()
-  | x :: xs, action => do
+  | Entities.mk [], _ => pure ()
+  | Entities.mk (x :: xs), action => do
     action x
-    forM xs action
+    forM (Entities.mk xs) action
 
 instance : ForM m Entities Elem where
   forM := Entities.forM
 
-def Entities.id (_entities: Entities): ID :=
-  ID.All
+def Entities.id (_entities: Entities): ID := ID.All
 
-def Entities.bounds (entities: Entities): List Rectangle :=
-  match entities with
-  | [] => []
-  | x :: xs => List.append x.bounds (Entities.bounds xs)
+def Entities.bounds (_entities: Entities): List Rectangle := []
 
 def Entities.render (entities: Entities): IO Unit :=
   forM entities (λ elem => elem.render)
 
 def Entities.update (entities: Entities) (delta : Float) (events: List Event) : Entities :=
-  List.map (λ entity => entity.update delta events) entities
+  match entities with
+  | Entities.mk xs => Entities.mk <| List.map (λ entity => entity.update delta events) xs
 
 instance : Entity Entities where
   id := Entities.id
   update := Entities.update
   bounds := Entities.bounds
   render := Entities.render
+
+def Entities.idBoundPairs (entities: Entities) : List (ID × List Rectangle) :=
+  match entities with
+  | Entities.mk xs => List.map (λ entity: Elem => (entity.id, entity.bounds)) xs
 
 end Entity
