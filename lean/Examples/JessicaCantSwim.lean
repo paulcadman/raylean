@@ -5,9 +5,6 @@ import Examples.JessicaCantSwim.Keys
 
 namespace JessicaCantSwim
 
-open Examples.JessicaCantSwim.Game
-open Examples.JessicaCantSwim.Keys
-
 def main : IO Unit := do
   let screenWidth: Nat := 800
   let screenHeight : Nat := 450
@@ -17,7 +14,7 @@ def main : IO Unit := do
   let mut game := Game.init startPosition screenWidth screenHeight
   while not (← windowShouldClose) do
     let delta ← getFrameTime
-    let keys ← getKeys
+    let keys ← Keys.getKeys
     game := game.update delta keys
     renderFrame do
       game.render

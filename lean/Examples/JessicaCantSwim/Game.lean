@@ -6,20 +6,14 @@ import Examples.JessicaCantSwim.Keys
 import Examples.JessicaCantSwim.Player
 import Examples.JessicaCantSwim.Ocean
 
-open Examples.JessicaCantSwim.Camera
-open Examples.JessicaCantSwim.Collision
-open Examples.JessicaCantSwim.Keys
-open Examples.JessicaCantSwim.Player
-open Examples.JessicaCantSwim.Ocean
-
-namespace Examples.JessicaCantSwim.Game
+namespace Game
 
 structure Game where
-  camera : Camera
-  player : Player
-  ocean : Ocean
+  camera : Camera.Camera
+  player : Player.Player
+  ocean : Ocean.Ocean
 
-def Game.init (position: Vector2) (screenWidth: Nat) (screenHeight: Nat): Game :=
+def init (position: Vector2) (screenWidth: Nat) (screenHeight: Nat): Game :=
   {
     player := Player.init position,
     camera := Camera.init position screenWidth screenHeight,
@@ -44,4 +38,4 @@ def Game.render (game: Game): IO Unit := do
     game.ocean.render
   return ()
 
-end Examples.JessicaCantSwim.Game
+end Game

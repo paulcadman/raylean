@@ -1,6 +1,6 @@
 import Raylib.Types
 
-namespace Examples.JessicaCantSwim.Collision
+namespace Collision
 
 -- detect if there is a collision between two rectangles
 def detect(rect1: Rectangle) (rect2: Rectangle): Bool :=
@@ -9,4 +9,4 @@ def detect(rect1: Rectangle) (rect2: Rectangle): Bool :=
   rect1.y < rect2.y + rect2.height &&
   rect1.y + rect1.height > rect2.y
 
-end Examples.JessicaCantSwim.Collision
+end Collision

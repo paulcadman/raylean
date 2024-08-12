@@ -1,7 +1,7 @@
 import «Raylib»
 import Raylib.Types
 
-namespace Examples.JessicaCantSwim.Ocean
+namespace Ocean
 
 structure Ocean where
   private maxWidth: Float
@@ -10,7 +10,7 @@ structure Ocean where
   private width: Float
   private speed: Float
 
-def Ocean.init (maxWidth: Nat) (height: Nat) : Ocean :=
+def init (maxWidth: Nat) (height: Nat) : Ocean :=
   {
     width := 0,
     maxWidth := maxWidth.toFloat,
@@ -47,3 +47,5 @@ def Ocean.bounds (ocean: Ocean): Rectangle :=
 def Ocean.render (ocean: Ocean): IO Unit := do
   let rect: Rectangle := ocean.box
   drawRectangleRec rect Color.blue
+
+end Ocean
