@@ -5,7 +5,7 @@ namespace Camera
 structure Camera where
   camera : Camera2D
 
-def init (player: Vector2) (screenWidth: Nat) (screenHeight: Nat): Camera :=
+def init (_player: Vector2) (_screenWidth: Nat) (_screenHeight: Nat): Camera :=
   {
     camera := {
       target := {x := 0, y := 0},

@@ -3,39 +3,55 @@ import Raylib.Types
 import Examples.JessicaCantSwim.Camera
 import Examples.JessicaCantSwim.Collision
 import Examples.JessicaCantSwim.Keys
+import Examples.JessicaCantSwim.Entity
 import Examples.JessicaCantSwim.Player
+import Examples.JessicaCantSwim.Scoreboard
 import Examples.JessicaCantSwim.Ocean
 
 namespace Game
 
 structure Game where
   camera : Camera.Camera
-  player : Player.Player
-  ocean : Ocean.Ocean
+  player: Player.Player
+  ocean: Ocean.Ocean
+  scoreboard: Scoreboard.Scoreboard
 
 def init (position: Vector2) (screenWidth: Nat) (screenHeight: Nat): Game :=
+  let camera := Camera.init position screenWidth screenHeight
   {
+    camera := camera,
+    -- Add your new Entity:
     player := Player.init position,
-    camera := Camera.init position screenWidth screenHeight,
+    scoreboard := Scoreboard.init,
     ocean := Ocean.init screenWidth screenHeight,
   }
 
-def Game.update (game: Game) (delta : Float) (keys: List Keys.Keys): Game :=
+def Game.entities (game: Game): Entity.Entities :=
+  Entity.Entities.mk [
+    -- Add your new Entity:
+    Entity.wrap <| game.player,
+    Entity.wrap <| game.scoreboard,
+    Entity.wrap <| game.ocean,
+  ]
+
+private def Game.update (game: Game) (delta : Float) (events: List Entity.Event): Game :=
   {
     camera := game.camera,
-    player := game.player.update delta keys,
-    ocean := game.ocean.update delta,
+    -- Add your new Entity:
+    player := game.player.update delta events
+    scoreboard := game.scoreboard.update delta events
+    ocean := game.ocean.update delta events
   }
 
-def Game.detectCollision (game: Game): Bool :=
-  Collision.detect game.player.bounds game.ocean.bounds
+def Game.step (game: Game) (delta : Float) (externalEvents: List Entity.Event): Game :=
+  let collisions := Collision.detectEvents game.entities
+  let allEvents := List.append externalEvents collisions
+  Game.update game delta allEvents
 
 def Game.render (game: Game): IO Unit := do
   clearBackground Color.Raylib.lightgray
   renderWithCamera2D game.camera.camera do
-    if game.detectCollision then drawText "Game Over" 10 10 24 Color.black
-    game.player.render
-    game.ocean.render
+    game.entities.render
   return ()
 
 end Game
