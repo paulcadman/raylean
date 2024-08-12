@@ -15,7 +15,7 @@ inductive Event where
 class Entity (E : Type) where
   id (entity: E): ID
   update (entity: E) (delta : Float) (events: List Event) : E
-  bounds (entity: E): Rectangle
+  bounds (entity: E): List Rectangle
   render (entity: E): IO Unit
 
 end Entity

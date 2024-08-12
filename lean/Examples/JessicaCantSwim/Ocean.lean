@@ -46,8 +46,8 @@ private def Ocean.box (ocean: Ocean): Rectangle :=
     height := ocean.height,
   }
 
-def Ocean.bounds (ocean: Ocean): Rectangle :=
-  ocean.box
+def Ocean.bounds (ocean: Ocean): List Rectangle :=
+  [ocean.box]
 
 def Ocean.render (ocean: Ocean): IO Unit := do
   let rect: Rectangle := ocean.box

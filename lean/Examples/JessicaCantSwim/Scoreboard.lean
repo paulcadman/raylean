@@ -25,13 +25,7 @@ def Scoreboard.update (entity: Scoreboard) (_delta : Float) (events: List Entity
     entity := entity.update' event
   return entity
 
-def Scoreboard.bounds (_entity: Scoreboard): Rectangle :=
-  {
-    x := 0,
-    y := 0,
-    width := 0,
-    height := 0,
-  }
+def Scoreboard.bounds (_entity: Scoreboard): List Rectangle := []
 
 def Scoreboard.render (entity: Scoreboard): IO Unit := do
   if entity.over

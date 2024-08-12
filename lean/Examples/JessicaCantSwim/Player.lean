@@ -46,13 +46,13 @@ def Player.update (p: Player) (delta : Float) (events: List Entity.Event): Id Pl
     p := p.update' delta event
   return p
 
-def Player.bounds (p: Player): Rectangle :=
-  {
+def Player.bounds (p: Player): List Rectangle :=
+  [{
     x := p.position.x - p.radius,
     y := p.position.y + p.radius,
     width := p.radius * 2,
     height := p.radius * 2,
-  }
+  }]
 
 -- IO is required, since we are drawing
 def Player.render (p: Player): IO Unit := do

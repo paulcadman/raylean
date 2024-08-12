@@ -29,7 +29,7 @@ def init (position: Vector2) (screenWidth: Nat) (screenHeight: Nat): Game :=
   }
 
 def Game.detectCollisions (game: Game): List Entity.Event :=
-  let entities : List (Entity.ID × Rectangle) :=
+  let entities : List (Entity.ID × List Rectangle) :=
     [
       (game.player.id, game.player.bounds),
       (game.scoreboard.id, game.scoreboard.bounds),
