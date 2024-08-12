@@ -4,12 +4,14 @@ namespace Entity
 
 inductive ID where
   | All
+  -- Add your new Entity:
   | Player
   | Scoreboard
   | Ocean
   deriving BEq
 
 inductive Event where
+  -- Add your new Event:
   | Collision (src: ID) (dst: ID) : Event
   | Key (key: Keys.Keys) : Event
 
@@ -19,27 +21,27 @@ class Entity (E : Type u) where
   bounds (entity: E): List Rectangle
   render (entity: E): IO Unit
 
-inductive Elem where
-  | mk (elem: Σ α, Entity α × α): Elem
+inductive Elem.{u}: Type (u + 1) where
+  | mk [Entity α] (elem: α): Elem
 
 def wrap [Entity E] (e: E): Elem :=
-  Elem.mk ⟨ E, ⟨ inferInstance, e ⟩ ⟩
+  Elem.mk e
 
 def Elem.id (elem: Elem): ID :=
   match elem with
-  | Elem.mk ⟨_, ⟨_, entity ⟩ ⟩ => Entity.id entity
+  | Elem.mk entity => Entity.id entity
 
 def Elem.bounds (elem: Elem): List Rectangle :=
   match elem with
-  | Elem.mk ⟨_, ⟨_, entity ⟩ ⟩ => Entity.bounds entity
+  | Elem.mk entity => Entity.bounds entity
 
 def Elem.render (elem: Elem): IO Unit :=
   match elem with
-  | Elem.mk ⟨_, ⟨_, entity ⟩ ⟩ => Entity.render entity
+  | Elem.mk entity => Entity.render entity
 
 def Elem.update (elem: Elem) (delta : Float) (events: List Event) : Elem :=
   match elem with
-  | Elem.mk ⟨_, ⟨_, entity ⟩ ⟩ => wrap <| Entity.update entity delta events
+  | Elem.mk entity => wrap <| Entity.update entity delta events
 
 instance : Entity Elem where
   id := Elem.id
