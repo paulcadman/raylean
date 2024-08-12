@@ -1,6 +1,8 @@
 import «Raylib»
 import Raylib.Types
 
+import Examples.JessicaCantSwim.Entity
+
 namespace Ocean
 
 structure Ocean where
@@ -19,7 +21,10 @@ def init (maxWidth: Nat) (height: Nat) : Ocean :=
     gravity := 9.8,
   }
 
-def Ocean.update (ocean: Ocean) (delta : Float) : Id Ocean := do
+def Ocean.id (_entity: Ocean): Entity.ID :=
+  Entity.ID.Ocean
+
+def Ocean.update (ocean: Ocean) (delta : Float) (_events: List Entity.Event): Id Ocean := do
   let move := ocean.speed * delta
   let mut width := ocean.width + move
   let mut speed := ocean.speed - ocean.gravity * delta
@@ -47,5 +52,11 @@ def Ocean.bounds (ocean: Ocean): Rectangle :=
 def Ocean.render (ocean: Ocean): IO Unit := do
   let rect: Rectangle := ocean.box
   drawRectangleRec rect Color.blue
+
+instance : Entity.Entity Ocean where
+  id := Ocean.id
+  update := Ocean.update
+  bounds := Ocean.bounds
+  render := Ocean.render
 
 end Ocean
