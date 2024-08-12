@@ -12,16 +12,16 @@ namespace Game
 
 structure Game where
   camera : Camera.Camera
-  player: Player.Player
-  ocean: Ocean.Ocean
-  scoreboard: Scoreboard.Scoreboard
+  player: Entity.Elem
+  ocean: Entity.Elem
+  scoreboard: Entity.Elem
 
 def init (position: Vector2) (screenWidth: Nat) (screenHeight: Nat): Game :=
   let camera := Camera.init position screenWidth screenHeight
 
-  let player := Player.init position
-  let scoreboard := Scoreboard.init
-  let ocean := Ocean.init screenWidth screenHeight
+  let player := Entity.wrap <| Player.init position
+  let scoreboard := Entity.wrap <| Scoreboard.init
+  let ocean := Entity.wrap <| Ocean.init screenWidth screenHeight
 
   {
     camera := camera,
@@ -32,9 +32,9 @@ def init (position: Vector2) (screenWidth: Nat) (screenHeight: Nat): Game :=
 
 def Game.entities (game: Game): Entity.Entities :=
   Entity.Entities.mk [
-    Entity.wrap game.player,
-    Entity.wrap game.scoreboard,
-    Entity.wrap game.ocean,
+    game.player,
+    game.scoreboard,
+    game.ocean,
   ]
 
 def Game.detectCollisions (game: Game): List Entity.Event :=
