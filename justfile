@@ -30,6 +30,13 @@ raylib_custom_cflags := raylib_config_flags + " " + raylib_os_custom_cflags
 # Raylib CC make paramter
 raylib_cc_parameter := if os() == "macos" { "/usr/bin/clang" } else { "gcc" }
 
+# The command used to invoke lake
+#
+# LEAN_CC is used for linux because the example executable will fail to link if
+# raylib is built with a glibc that's incompatible with the one that's bundled
+# with leanc.
+lake_command := if os() == "linux" { "LEAN_CC=clang lake" } else { "lake" }
+
 static_lib_path := join(justfile_directory(), "lib")
 raylib_src_path := join(justfile_directory(), "raylib-5.0", "src")
 resource_dir := join(justfile_directory(), "resources")
@@ -76,11 +83,11 @@ build_raylib:
 
 # build both the raylib library and the Lake project
 build: build_resvg build_raylib bundler
-    lake -R {{lake_config_opts}} build
+    {{lake_command}} -R {{lake_config_opts}} build
 
 # clean only the Lake project
 clean:
-    lake clean
+    {{lake_command}} clean
 
 clean_static_lib:
     rm -rf {{static_lib_path}}
