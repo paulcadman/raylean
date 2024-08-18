@@ -51,6 +51,9 @@ jobs:
       - name: Setup Rust
         run: rustup toolchain install stable --profile minimal
 
+      - name: Install lean system dependencies
+        run: sudo apt-get install -y --no-install-recommends libc++-dev libgmp-dev libc++abi-dev
+
       - name: Install raylib deps
         run: sudo apt-get install -y --no-install-recommends libglfw3 libglfw3-dev libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxext-dev libxfixes-dev libwayland-dev libxkbcommon-dev
 
