@@ -17,7 +17,7 @@ inductive Event where
 
 class Entity (E : Type u) where
   id (entity: E): ID
-  update (entity: E) (delta : Float) (events: List Event) : E
+  update (entity: E) (delta : Float) (event: Event) : E
   bounds (entity: E): List Rectangle
   render (entity: E): IO Unit
 
@@ -39,9 +39,9 @@ def Elem.render (elem: Elem): IO Unit :=
   match elem with
   | Elem.mk entity => Entity.render entity
 
-def Elem.update (elem: Elem) (delta : Float) (events: List Event) : Elem :=
+def Elem.update (elem: Elem) (delta : Float) (event: Event) : Elem :=
   match elem with
-  | Elem.mk entity => wrap <| Entity.update entity delta events
+  | Elem.mk entity => wrap <| Entity.update entity delta event
 
 instance : Entity Elem where
   id := Elem.id
@@ -68,9 +68,9 @@ def Entities.bounds (_entities: Entities): List Rectangle := []
 def Entities.render (entities: Entities): IO Unit :=
   forM entities (λ elem => elem.render)
 
-def Entities.update (entities: Entities) (delta : Float) (events: List Event) : Entities :=
+def Entities.update (entities: Entities) (delta : Float) (event: Event) : Entities :=
   match entities with
-  | Entities.mk xs => Entities.mk <| List.map (λ entity => entity.update delta events) xs
+  | Entities.mk xs => Entities.mk <| List.map (λ entity => entity.update delta event) xs
 
 instance : Entity Entities where
   id := Entities.id

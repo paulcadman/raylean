@@ -26,7 +26,7 @@ private def Player.modifyPositionX (p: Player) (f : Float → Float) : Player :=
 private def Player.modifyPositionY (p: Player) (f : Float → Float) : Player :=
   { p with position := ⟨ p.position.x, f p.position.y ⟩}
 
-def Player.update' (p: Player) (delta: Float) (event: Entity.Event): Player :=
+def Player.update (p: Player) (delta: Float) (event: Entity.Event): Player :=
   let move := p.speed * delta
   match event with
   | Entity.Event.Key Keys.Keys.Left =>
@@ -39,12 +39,6 @@ def Player.update' (p: Player) (delta: Float) (event: Entity.Event): Player :=
     p.modifyPositionY (· + move)
   | _otherwise =>
     p
-
-def Player.update (p: Player) (delta : Float) (events: List Entity.Event): Id Player := do
-  let mut p := p
-  for event in events do
-    p := p.update' delta event
-  return p
 
 def Player.bounds (p: Player): List Rectangle :=
   [{

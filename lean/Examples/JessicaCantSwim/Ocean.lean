@@ -24,7 +24,7 @@ def init (maxWidth: Nat) (height: Nat) : Ocean :=
 def Ocean.id (_entity: Ocean): Entity.ID :=
   Entity.ID.Ocean
 
-def Ocean.update (ocean: Ocean) (delta : Float) (_events: List Entity.Event): Id Ocean := do
+def Ocean.update (ocean: Ocean) (delta : Float) (_event: Entity.Event): Id Ocean := do
   let move := ocean.speed * delta
   let mut width := ocean.width + move
   let mut speed := ocean.speed - ocean.gravity * delta

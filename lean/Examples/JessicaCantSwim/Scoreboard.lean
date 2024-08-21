@@ -13,17 +13,11 @@ def init: Scoreboard :=
 def Scoreboard.id (_entity: Scoreboard): Entity.ID :=
   Entity.ID.Scoreboard
 
-def Scoreboard.update' (entity: Scoreboard) (event: Entity.Event) : Scoreboard :=
+def Scoreboard.update (entity: Scoreboard) (_delta : Float) (event: Entity.Event) : Scoreboard :=
   match event with
   | Entity.Event.Collision Entity.ID.Player Entity.ID.Ocean => { over := True }
   | Entity.Event.Collision Entity.ID.Ocean Entity.ID.Player => { over := True }
   | _otherwise => entity
-
-def Scoreboard.update (entity: Scoreboard) (_delta : Float) (events: List Entity.Event) : Id Scoreboard := do
-  let mut entity := entity
-  for event in events do
-    entity := entity.update' event
-  return entity
 
 def Scoreboard.bounds (_entity: Scoreboard): List Rectangle := []
 
