@@ -60,9 +60,8 @@ private def Game.updates (game: Game) (delta : Float) (events: List Entity.Msg):
   return game
 
 def Game.step (game: Game) (delta : Float) (externalEvents: List Entity.Msg): Game :=
-  let emits := game.emit
-  let collisions := Collision.detectCollisions emits
-  let allEvents := List.append emits (List.append externalEvents collisions)
+  let collisions := Collision.detectCollisions externalEvents
+  let allEvents := List.append externalEvents collisions
   Game.updates game delta allEvents
 
 end Game

@@ -15,6 +15,8 @@ inductive Msg where
   | Bounds (id: ID) (boxes: List Rectangle): Msg
   | Collision (src: ID) (dst: ID) : Msg
   | Key (key: Keys.Keys) : Msg
+  | RequestRand (id: ID): Msg
+  | Rand (id: ID) (r: Nat): Msg
 
 class Entity (E : Type u) where
   id (entity: E): ID
