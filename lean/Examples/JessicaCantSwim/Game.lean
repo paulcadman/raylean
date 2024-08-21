@@ -52,12 +52,9 @@ private def Game.updates (game: Game) (delta : Float) (events: List Entity.Msg):
   return game
 
 def Game.step (game: Game) (delta : Float) (externalEvents: List Entity.Msg): Game :=
-  let collisions := Collision.detectEvents <| Entity.Entities.mk [
-    -- Add your new Entity here:
-    Entity.wrap <| game.ocean,
-    Entity.wrap <| game.player
-  ]
-  let allEvents := List.append externalEvents collisions
+  let collisions := Collision.detects [(game.ocean.id, game.ocean.bounds), (game.player.id, game.player.bounds)]
+  let collisionsMsgs := List.map (λ collision => Entity.Msg.Collision collision.1 collision.2) collisions
+  let allEvents := List.append externalEvents collisionsMsgs
   Game.updates game delta allEvents
 
 end Game
