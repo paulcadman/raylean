@@ -34,13 +34,10 @@ private def Ocean.box (ocean: Ocean): Rectangle :=
     height := ocean.height,
   }
 
-def Ocean.bounds (ocean: Ocean): List Rectangle :=
-  [ocean.box]
-
 def Ocean.emit (entity: Ocean): List Entity.Msg :=
   if entity.resetting
   then [ Entity.Msg.RequestRand entity.id ]
-  else [ Entity.Msg.Bounds entity.id entity.bounds ]
+  else [ Entity.Msg.Bounds entity.id [entity.box] ]
 
 def Ocean.update (ocean: Ocean) (msg: Entity.Msg): Id Ocean := do
   match msg with
@@ -78,7 +75,6 @@ instance : Entity.Entity Ocean where
   id := Ocean.id
   emit := Ocean.emit
   update := Ocean.update
-  bounds := Ocean.bounds
   render := Ocean.render
 
 end Ocean

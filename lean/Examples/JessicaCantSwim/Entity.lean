@@ -23,7 +23,6 @@ class Entity (E : Type u) where
   id (entity: E): ID
   emit (entity: E): List Msg
   update (entity: E) (msg: Msg) : E
-  bounds (entity: E): List Rectangle
   render (entity: E): IO Unit
 
 end Entity

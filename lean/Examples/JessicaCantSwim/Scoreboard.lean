@@ -21,8 +21,6 @@ def Scoreboard.update (entity: Scoreboard) (msg: Entity.Msg) : Scoreboard :=
 
 def Scoreboard.emit (_entity: Scoreboard): List Entity.Msg := []
 
-def Scoreboard.bounds (_entity: Scoreboard): List Rectangle := []
-
 def Scoreboard.render (entity: Scoreboard): IO Unit := do
   if entity.over
     then drawText "Game Over" 10 10 24 Color.black
@@ -32,7 +30,6 @@ instance : Entity.Entity Scoreboard where
   id := Scoreboard.id
   emit := Scoreboard.emit
   update := Scoreboard.update
-  bounds := Scoreboard.bounds
   render := Scoreboard.render
 
 end Scoreboard

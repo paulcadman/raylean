@@ -68,7 +68,6 @@ instance : Entity.Entity Player where
   id := Player.id
   emit := Player.emit
   update := Player.update
-  bounds := Player.bounds
   render := Player.render
 
 end Player
