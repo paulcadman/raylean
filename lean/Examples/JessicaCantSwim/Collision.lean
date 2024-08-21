@@ -11,7 +11,7 @@ private def detect(rect1: Rectangle) (rect2: Rectangle): Bool :=
   rect1.y < rect2.y + rect2.height &&
   rect1.y + rect1.height > rect2.y
 
-private def detects {EntityID: Type} (entities: List (EntityID × List Rectangle)): Id (List (EntityID × EntityID)) := do
+def detects {EntityID: Type} (entities: List (EntityID × List Rectangle)): Id (List (EntityID × EntityID)) := do
   let mut collisions := #[]
   for src in entities do
     for dst in entities do
@@ -21,10 +21,15 @@ private def detects {EntityID: Type} (entities: List (EntityID × List Rectangle
             collisions := collisions.push (src.1, dst.1)
   return collisions.toList
 
--- detect if there is a collision between multiple entities
-def detectEvents (entities: Entity.Entities): List Entity.Event :=
-  let idBoundPairs : List (Entity.ID × List Rectangle) := entities.idBoundPairs
-  let collisions := Collision.detects idBoundPairs
-  List.map (λ collision => Entity.Event.Collision collision.1 collision.2) collisions
+def detectCollisions (msgs: List Entity.Msg) : (List Entity.Msg) :=
+  let idBoxPairs := List.filterMap (λ msg =>
+    match msg with
+    | Entity.Msg.Bounds id boxes =>
+      Option.some (id, boxes)
+    | _otherwise =>
+      Option.none
+  ) msgs
+  let collisions := detects idBoxPairs
+  List.map (λ collision => Entity.Msg.Collision collision.1 collision.2) collisions
 
 end Collision

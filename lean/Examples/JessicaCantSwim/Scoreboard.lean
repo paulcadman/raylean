@@ -5,37 +5,48 @@ import Examples.JessicaCantSwim.Entity
 namespace Scoreboard
 
 structure Scoreboard where
-  private over: Bool
+  private inOcean: Bool
+  private onWetsand: Bool
+  private score: Float
 
 def init: Scoreboard :=
-  { over := False}
+  {
+    inOcean := False,
+    onWetsand := False,
+    score := 0,
+  }
 
 def Scoreboard.id (_entity: Scoreboard): Entity.ID :=
   Entity.ID.Scoreboard
 
-def Scoreboard.update' (entity: Scoreboard) (event: Entity.Event) : Scoreboard :=
-  match event with
-  | Entity.Event.Collision Entity.ID.Player Entity.ID.Ocean => { over := True }
-  | Entity.Event.Collision Entity.ID.Ocean Entity.ID.Player => { over := True }
+def Scoreboard.update (entity: Scoreboard) (msg: Entity.Msg) : Scoreboard :=
+  match msg with
+  | Entity.Msg.Collision Entity.ID.Player Entity.ID.Ocean => { entity with inOcean := True }
+  | Entity.Msg.Collision Entity.ID.Ocean Entity.ID.Player => { entity with inOcean := True }
+  | Entity.Msg.Collision Entity.ID.Player Entity.ID.WetSand => { entity with onWetsand := True }
+  | Entity.Msg.Collision Entity.ID.WetSand Entity.ID.Player => { entity with onWetsand := True }
+  | Entity.Msg.Time delta =>
+    if !entity.inOcean && entity.onWetsand
+    then { entity with
+      onWetsand := False,
+      score := entity.score + delta,
+    }
+    else entity
   | _otherwise => entity
 
-def Scoreboard.update (entity: Scoreboard) (_delta : Float) (events: List Entity.Event) : Id Scoreboard := do
-  let mut entity := entity
-  for event in events do
-    entity := entity.update' event
-  return entity
-
-def Scoreboard.bounds (_entity: Scoreboard): List Rectangle := []
+def Scoreboard.emit (_entity: Scoreboard): List Entity.Msg := []
 
 def Scoreboard.render (entity: Scoreboard): IO Unit := do
-  if entity.over
-    then drawText "Game Over" 10 10 24 Color.black
-  return ()
+  if entity.inOcean then
+    drawText "Game Over" 10 10 24 Color.black
+    return ()
+  let scoreText := reprStr (entity.score.toUInt64)
+  drawText scoreText 10 10 24 Color.black
 
 instance : Entity.Entity Scoreboard where
   id := Scoreboard.id
+  emit := Scoreboard.emit
   update := Scoreboard.update
-  bounds := Scoreboard.bounds
   render := Scoreboard.render
 
 end Scoreboard

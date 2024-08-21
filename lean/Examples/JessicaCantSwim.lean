@@ -6,6 +6,20 @@ import Examples.JessicaCantSwim.Entity
 
 namespace JessicaCantSwim
 
+def rands (msgs: List Entity.Msg) : IO (List Entity.Msg) := do
+  let ids := List.filterMap (λ msg =>
+    match msg with
+    | Entity.Msg.RequestRand id =>
+      Option.some id
+    | _otherwise =>
+      Option.none
+  ) msgs
+  let mut rs := #[]
+  for id in ids do
+    let r ← IO.rand 0 100
+    rs := rs.push (Entity.Msg.Rand id r)
+  return rs.toList
+
 def main : IO Unit := do
   let screenWidth: Nat := 800
   let screenHeight : Nat := 450
@@ -16,8 +30,10 @@ def main : IO Unit := do
   while not (← windowShouldClose) do
     let delta ← getFrameTime
     let keys ← Keys.getKeys
-    let events: List Entity.Event := List.map (λ key => Entity.Event.Key key) keys
-    game := game.step delta events
+    let emits := game.emit
+    let randMsgs ← rands emits
+    let events: List Entity.Msg := List.map (λ key => Entity.Msg.Key key) keys
+    game := game.step delta (List.join [events, emits, randMsgs])
     renderFrame do
       game.render
   closeWindow
