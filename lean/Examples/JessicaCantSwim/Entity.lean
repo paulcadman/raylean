@@ -10,14 +10,14 @@ inductive ID where
   | Ocean
   deriving BEq
 
-inductive Event where
-  -- Add your new Event:
-  | Collision (src: ID) (dst: ID) : Event
-  | Key (key: Keys.Keys) : Event
+inductive Msg where
+  -- Add your new Message here:
+  | Collision (src: ID) (dst: ID) : Msg
+  | Key (key: Keys.Keys) : Msg
 
 class Entity (E : Type u) where
   id (entity: E): ID
-  update (entity: E) (delta : Float) (event: Event) : E
+  update (entity: E) (delta : Float) (msg: Msg) : E
   bounds (entity: E): List Rectangle
   render (entity: E): IO Unit
 
@@ -39,9 +39,9 @@ def Elem.render (elem: Elem): IO Unit :=
   match elem with
   | Elem.mk entity => Entity.render entity
 
-def Elem.update (elem: Elem) (delta : Float) (event: Event) : Elem :=
+def Elem.update (elem: Elem) (delta : Float) (msg: Msg) : Elem :=
   match elem with
-  | Elem.mk entity => wrap <| Entity.update entity delta event
+  | Elem.mk entity => wrap <| Entity.update entity delta msg
 
 instance : Entity Elem where
   id := Elem.id
@@ -68,9 +68,9 @@ def Entities.bounds (_entities: Entities): List Rectangle := []
 def Entities.render (entities: Entities): IO Unit :=
   forM entities (λ elem => elem.render)
 
-def Entities.update (entities: Entities) (delta : Float) (event: Event) : Entities :=
+def Entities.update (entities: Entities) (delta : Float) (msg: Msg) : Entities :=
   match entities with
-  | Entities.mk xs => Entities.mk <| List.map (λ entity => entity.update delta event) xs
+  | Entities.mk xs => Entities.mk <| List.map (λ entity => entity.update delta msg) xs
 
 instance : Entity Entities where
   id := Entities.id

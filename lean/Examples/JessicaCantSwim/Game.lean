@@ -27,13 +27,13 @@ def init (position: Vector2) (screenWidth: Nat) (screenHeight: Nat): Game :=
     ocean := Ocean.init screenWidth screenHeight,
   }
 
-private def Game.update (game: Game) (delta : Float) (event: Entity.Event): Game :=
+private def Game.update (game: Game) (delta : Float) (msg: Entity.Msg): Game :=
   {
     camera := game.camera,
     -- Add your new Entity here:
-    player := game.player.update delta event
-    scoreboard := game.scoreboard.update delta event
-    ocean := game.ocean.update delta event
+    player := game.player.update delta msg
+    scoreboard := game.scoreboard.update delta msg
+    ocean := game.ocean.update delta msg
   }
 
 def Game.render (game: Game): IO Unit := do
@@ -45,13 +45,13 @@ def Game.render (game: Game): IO Unit := do
     game.scoreboard.render
   return ()
 
-private def Game.updates (game: Game) (delta : Float) (events: List Entity.Event): Id Game := do
+private def Game.updates (game: Game) (delta : Float) (events: List Entity.Msg): Id Game := do
   let mut game := game
   for event in events do
     game := game.update delta event
   return game
 
-def Game.step (game: Game) (delta : Float) (externalEvents: List Entity.Event): Game :=
+def Game.step (game: Game) (delta : Float) (externalEvents: List Entity.Msg): Game :=
   let collisions := Collision.detectEvents <| Entity.Entities.mk [
     -- Add your new Entity here:
     Entity.wrap <| game.ocean,

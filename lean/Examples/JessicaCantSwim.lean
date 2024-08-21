@@ -16,7 +16,7 @@ def main : IO Unit := do
   while not (← windowShouldClose) do
     let delta ← getFrameTime
     let keys ← Keys.getKeys
-    let events: List Entity.Event := List.map (λ key => Entity.Event.Key key) keys
+    let events: List Entity.Msg := List.map (λ key => Entity.Msg.Key key) keys
     game := game.step delta events
     renderFrame do
       game.render

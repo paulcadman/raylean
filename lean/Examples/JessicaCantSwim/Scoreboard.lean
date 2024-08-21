@@ -13,10 +13,10 @@ def init: Scoreboard :=
 def Scoreboard.id (_entity: Scoreboard): Entity.ID :=
   Entity.ID.Scoreboard
 
-def Scoreboard.update (entity: Scoreboard) (_delta : Float) (event: Entity.Event) : Scoreboard :=
-  match event with
-  | Entity.Event.Collision Entity.ID.Player Entity.ID.Ocean => { over := True }
-  | Entity.Event.Collision Entity.ID.Ocean Entity.ID.Player => { over := True }
+def Scoreboard.update (entity: Scoreboard) (_delta : Float) (msg: Entity.Msg) : Scoreboard :=
+  match msg with
+  | Entity.Msg.Collision Entity.ID.Player Entity.ID.Ocean => { over := True }
+  | Entity.Msg.Collision Entity.ID.Ocean Entity.ID.Player => { over := True }
   | _otherwise => entity
 
 def Scoreboard.bounds (_entity: Scoreboard): List Rectangle := []
