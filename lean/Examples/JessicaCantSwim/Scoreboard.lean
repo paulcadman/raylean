@@ -37,10 +37,10 @@ def Scoreboard.update (entity: Scoreboard) (msg: Entity.Msg) : Scoreboard :=
 def Scoreboard.emit (_entity: Scoreboard): List Entity.Msg := []
 
 def Scoreboard.render (entity: Scoreboard): IO Unit := do
-  if entity.inOcean then
-    drawText "Game Over" 10 10 24 Color.black
-    return ()
   let scoreText := reprStr (entity.score.toUInt64)
+  if entity.inOcean then
+    drawText ("Game Over! Top Score: " ++ scoreText) 10 10 24 Color.black
+    return ()
   drawText scoreText 10 10 24 Color.black
 
 instance : Entity.Entity Scoreboard where
