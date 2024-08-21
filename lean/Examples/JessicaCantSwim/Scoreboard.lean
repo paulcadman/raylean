@@ -13,7 +13,7 @@ def init: Scoreboard :=
 def Scoreboard.id (_entity: Scoreboard): Entity.ID :=
   Entity.ID.Scoreboard
 
-def Scoreboard.update (entity: Scoreboard) (_delta : Float) (msg: Entity.Msg) : Scoreboard :=
+def Scoreboard.update (entity: Scoreboard) (msg: Entity.Msg) : Scoreboard :=
   match msg with
   | Entity.Msg.Collision Entity.ID.Player Entity.ID.Ocean => { over := True }
   | Entity.Msg.Collision Entity.ID.Ocean Entity.ID.Player => { over := True }

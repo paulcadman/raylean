@@ -42,7 +42,7 @@ def Ocean.emit (entity: Ocean): List Entity.Msg :=
   then [ Entity.Msg.RequestRand entity.id ]
   else [ Entity.Msg.Bounds entity.id entity.bounds ]
 
-def Ocean.update (ocean: Ocean) (delta : Float) (msg: Entity.Msg): Id Ocean := do
+def Ocean.update (ocean: Ocean) (msg: Entity.Msg): Id Ocean := do
   match msg with
   | Entity.Msg.Rand id r =>
     if (id == ocean.id && ocean.resetting)
@@ -55,7 +55,7 @@ def Ocean.update (ocean: Ocean) (delta : Float) (msg: Entity.Msg): Id Ocean := d
       speed := r.toFloat,
     }
     else ocean
-  | _otherwise =>
+  | Entity.Msg.Time delta =>
     let move := ocean.speed * delta
     let width := ocean.width + move
     let speed := ocean.speed - ocean.gravity * delta
@@ -67,6 +67,8 @@ def Ocean.update (ocean: Ocean) (delta : Float) (msg: Entity.Msg): Id Ocean := d
       width := width,
       speed := speed,
     }
+  | _otherwise =>
+    ocean
 
 def Ocean.render (ocean: Ocean): IO Unit := do
   let rect: Rectangle := ocean.box

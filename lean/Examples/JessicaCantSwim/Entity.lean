@@ -15,13 +15,14 @@ inductive Msg where
   | Bounds (id: ID) (boxes: List Rectangle): Msg
   | Collision (src: ID) (dst: ID) : Msg
   | Key (key: Keys.Keys) : Msg
+  | Time (delta: Float): Msg
   | RequestRand (id: ID): Msg
   | Rand (id: ID) (r: Nat): Msg
 
 class Entity (E : Type u) where
   id (entity: E): ID
   emit (entity: E): List Msg
-  update (entity: E) (delta : Float) (msg: Msg) : E
+  update (entity: E) (msg: Msg) : E
   bounds (entity: E): List Rectangle
   render (entity: E): IO Unit
 
