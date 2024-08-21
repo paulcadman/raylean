@@ -78,7 +78,6 @@ def WetSand.render (wetsand: WetSand): IO Unit := do
   drawRectangleRec rect Color.red
 
 instance : Entity.Entity WetSand where
-  id := WetSand.id
   emit := WetSand.emit
   update := WetSand.update
   render := WetSand.render

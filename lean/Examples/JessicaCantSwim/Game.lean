@@ -8,6 +8,7 @@ import Examples.JessicaCantSwim.Player
 import Examples.JessicaCantSwim.Scoreboard
 import Examples.JessicaCantSwim.Ocean
 import Examples.JessicaCantSwim.WetSand
+import Examples.JessicaCantSwim.Shells
 
 namespace Game
 
@@ -15,9 +16,10 @@ structure Game where
   camera : Camera.Camera
   -- Add your new Entity here:
   player: Player.Player
+  scoreboard: Scoreboard.Scoreboard
   ocean: Ocean.Ocean
   wetsand: WetSand.WetSand
-  scoreboard: Scoreboard.Scoreboard
+  shells: Shells.Shells
 
 def init (position: Vector2) (screenWidth: Nat) (screenHeight: Nat): Game :=
   let camera := Camera.init position screenWidth screenHeight
@@ -28,6 +30,7 @@ def init (position: Vector2) (screenWidth: Nat) (screenHeight: Nat): Game :=
     scoreboard := Scoreboard.init,
     ocean := Ocean.init screenWidth screenHeight,
     wetsand := WetSand.init screenWidth screenHeight,
+    shells := Shells.init screenWidth screenHeight,
   }
 
 private def Game.update (game: Game) (msg: Entity.Msg): Game :=
@@ -38,6 +41,7 @@ private def Game.update (game: Game) (msg: Entity.Msg): Game :=
     scoreboard := game.scoreboard.update msg
     ocean := game.ocean.update msg
     wetsand := game.wetsand.update msg
+    shells := game.shells.update msg
   }
 
 def Game.render (game: Game): IO Unit := do
@@ -45,6 +49,7 @@ def Game.render (game: Game): IO Unit := do
   renderWithCamera2D game.camera.camera do
     -- Add your new Entity here:
     game.wetsand.render
+    game.shells.render
     game.ocean.render
     game.player.render
     game.scoreboard.render
@@ -55,6 +60,7 @@ def Game.emit (game: Game): List Entity.Msg :=
     -- Add your new Entity here:
     game.ocean.emit,
     game.wetsand.emit,
+    game.shells.emit,
     game.player.emit,
     game.scoreboard.emit
   ]

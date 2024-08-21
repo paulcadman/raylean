@@ -65,7 +65,6 @@ def Player.render (p: Player): IO Unit := do
   drawCircleV p.position p.radius Color.green
 
 instance : Entity.Entity Player where
-  id := Player.id
   emit := Player.emit
   update := Player.update
   render := Player.render
