@@ -7,17 +7,18 @@ import Examples.JessicaCantSwim.Entity
 namespace JessicaCantSwim
 
 def rands (msgs: List Entity.Msg) : IO (List Entity.Msg) := do
-  let ids := List.filterMap (λ msg =>
-    match msg with
-    | Entity.Msg.RequestRand id =>
-      Option.some id
-    | _otherwise =>
-      Option.none
-  ) msgs
   let mut rs := #[]
-  for id in ids do
-    let r ← IO.rand 0 100
-    rs := rs.push (Entity.Msg.Rand id r)
+  for msg in msgs do
+    match msg with
+    | Entity.Msg.RequestRand id max =>
+      let r ← IO.rand 0 max
+      rs := rs.push (Entity.Msg.ResponseRand id r)
+    | Entity.Msg.RequestRandPair id (max1, max2) =>
+      let r1 ← IO.rand 0 max1
+      let r2 ← IO.rand 0 max2
+      rs := rs.push (Entity.Msg.ResponseRandPair id (r1, r2))
+    | _otherwise =>
+      continue
   return rs.toList
 
 def main : IO Unit := do

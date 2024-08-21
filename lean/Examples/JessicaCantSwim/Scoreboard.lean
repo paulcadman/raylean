@@ -18,10 +18,13 @@ def init: Scoreboard :=
 
 def Scoreboard.update (entity: Scoreboard) (msg: Entity.Msg) : Scoreboard :=
   match msg with
-  | Entity.Msg.Collision Entity.ID.Player Entity.ID.Ocean => { entity with inOcean := True }
   | Entity.Msg.Collision Entity.ID.Ocean Entity.ID.Player => { entity with inOcean := True }
-  | Entity.Msg.Collision Entity.ID.Player Entity.ID.WetSand => { entity with onWetsand := True }
   | Entity.Msg.Collision Entity.ID.WetSand Entity.ID.Player => { entity with onWetsand := True }
+  | Entity.Msg.Collision (Entity.ID.Shell _) Entity.ID.Player =>
+    if !entity.inOcean
+    then { entity with
+      score := entity.score + 10,
+    } else entity
   | Entity.Msg.Time delta =>
     if !entity.inOcean && entity.onWetsand
     then { entity with

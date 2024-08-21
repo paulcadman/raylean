@@ -43,12 +43,12 @@ def Ocean.emit (entity: Ocean): List Entity.Msg :=
     Entity.Msg.OceanPullingBack entity.width
   ]
   else if entity.resetting
-  then [ Entity.Msg.RequestRand entity.id ]
+  then [ Entity.Msg.RequestRand entity.id 100 ]
   else [ Entity.Msg.Bounds entity.id [entity.box] ]
 
 def Ocean.update (ocean: Ocean) (msg: Entity.Msg): Id Ocean := do
   match msg with
-  | Entity.Msg.Rand id r =>
+  | Entity.Msg.ResponseRand id r =>
     if (id == ocean.id && ocean.resetting)
     then return {
       resetting := false,

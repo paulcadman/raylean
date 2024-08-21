@@ -9,6 +9,8 @@ inductive ID where
   | Scoreboard
   | Ocean
   | WetSand
+  | Shells
+  | Shell (n: Nat)
   deriving BEq, Repr
 
 inductive Msg where
@@ -17,8 +19,12 @@ inductive Msg where
   | Collision (src: ID) (dst: ID) : Msg
   | Key (key: Keys.Keys) : Msg
   | Time (delta: Float): Msg
-  | RequestRand (id: ID): Msg
-  | Rand (id: ID) (r: Nat): Msg
+
+  | RequestRand (id: ID) (max: Nat): Msg
+  | ResponseRand (id: ID) (r: Nat): Msg
+  | RequestRandPair (id: ID) (max: (Nat × Nat)): Msg
+  | ResponseRandPair (id: ID) (r: (Nat × Nat)): Msg
+
   | OceanPullingBack (max: Float): Msg
 
 class Entity (E : Type u) where
