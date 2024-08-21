@@ -16,9 +16,6 @@ def init: Scoreboard :=
     score := 0,
   }
 
-def Scoreboard.id (_entity: Scoreboard): Entity.ID :=
-  Entity.ID.Scoreboard
-
 def Scoreboard.update (entity: Scoreboard) (msg: Entity.Msg) : Scoreboard :=
   match msg with
   | Entity.Msg.Collision Entity.ID.Player Entity.ID.Ocean => { entity with inOcean := True }
@@ -44,7 +41,6 @@ def Scoreboard.render (entity: Scoreboard): IO Unit := do
   drawText scoreText 10 10 24 Color.black
 
 instance : Entity.Entity Scoreboard where
-  id := Scoreboard.id
   emit := Scoreboard.emit
   update := Scoreboard.update
   render := Scoreboard.render

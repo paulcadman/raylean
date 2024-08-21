@@ -86,7 +86,6 @@ def Ocean.render (ocean: Ocean): IO Unit := do
   drawRectangleRec rect Color.blue
 
 instance : Entity.Entity Ocean where
-  id := Ocean.id
   emit := Ocean.emit
   update := Ocean.update
   render := Ocean.render
