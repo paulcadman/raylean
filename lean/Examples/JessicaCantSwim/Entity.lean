@@ -9,7 +9,7 @@ inductive ID where
   | Scoreboard
   | Ocean
   | WetSand
-  deriving BEq
+  deriving BEq, Repr
 
 inductive Msg where
   -- Add your new Message here:
