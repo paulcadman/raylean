@@ -7,6 +7,7 @@ import Examples.JessicaCantSwim.Entity
 import Examples.JessicaCantSwim.Player
 import Examples.JessicaCantSwim.Scoreboard
 import Examples.JessicaCantSwim.Ocean
+import Examples.JessicaCantSwim.WetSand
 
 namespace Game
 
@@ -15,6 +16,7 @@ structure Game where
   -- Add your new Entity here:
   player: Player.Player
   ocean: Ocean.Ocean
+  wetsand: WetSand.WetSand
   scoreboard: Scoreboard.Scoreboard
 
 def init (position: Vector2) (screenWidth: Nat) (screenHeight: Nat): Game :=
@@ -25,6 +27,7 @@ def init (position: Vector2) (screenWidth: Nat) (screenHeight: Nat): Game :=
     player := Player.init position,
     scoreboard := Scoreboard.init,
     ocean := Ocean.init screenWidth screenHeight,
+    wetsand := WetSand.init screenWidth screenHeight,
   }
 
 private def Game.update (game: Game) (msg: Entity.Msg): Game :=
@@ -34,12 +37,14 @@ private def Game.update (game: Game) (msg: Entity.Msg): Game :=
     player := game.player.update msg
     scoreboard := game.scoreboard.update msg
     ocean := game.ocean.update msg
+    wetsand := game.wetsand.update msg
   }
 
 def Game.render (game: Game): IO Unit := do
   clearBackground Color.Raylib.lightgray
   renderWithCamera2D game.camera.camera do
     -- Add your new Entity here:
+    game.wetsand.render
     game.ocean.render
     game.player.render
     game.scoreboard.render
@@ -49,6 +54,7 @@ def Game.emit (game: Game): List Entity.Msg :=
   List.join [
     -- Add your new Entity here:
     game.ocean.emit,
+    game.wetsand.emit,
     game.player.emit,
     game.scoreboard.emit
   ]

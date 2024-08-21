@@ -12,6 +12,7 @@ structure Ocean where
   private width: Float
   private speed: Float
   private resetting: Bool
+  private pulledback: Bool
 
 def init (maxWidth: Nat) (height: Nat) : Ocean :=
   {
@@ -21,6 +22,7 @@ def init (maxWidth: Nat) (height: Nat) : Ocean :=
     speed := 100,
     gravity := 9.8,
     resetting := false
+    pulledback := false
   }
 
 def Ocean.id (_entity: Ocean): Entity.ID :=
@@ -35,7 +37,12 @@ private def Ocean.box (ocean: Ocean): Rectangle :=
   }
 
 def Ocean.emit (entity: Ocean): List Entity.Msg :=
-  if entity.resetting
+  if entity.speed < 0 && !entity.pulledback
+  then [
+    Entity.Msg.Bounds entity.id [entity.box],
+    Entity.Msg.OceanPullingBack entity.width
+  ]
+  else if entity.resetting
   then [ Entity.Msg.RequestRand entity.id ]
   else [ Entity.Msg.Bounds entity.id [entity.box] ]
 
@@ -50,8 +57,14 @@ def Ocean.update (ocean: Ocean) (msg: Entity.Msg): Id Ocean := do
       gravity := ocean.gravity,
       width := 0,
       speed := r.toFloat,
+      pulledback := false,
     }
     else ocean
+  | Entity.Msg.OceanPullingBack _ =>
+    -- Don't send this twice
+    return { ocean with
+      pulledback := true
+    }
   | Entity.Msg.Time delta =>
     let move := ocean.speed * delta
     let width := ocean.width + move
@@ -63,6 +76,7 @@ def Ocean.update (ocean: Ocean) (msg: Entity.Msg): Id Ocean := do
       gravity := ocean.gravity,
       width := width,
       speed := speed,
+      pulledback := ocean.pulledback,
     }
   | _otherwise =>
     ocean

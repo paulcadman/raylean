@@ -8,6 +8,7 @@ inductive ID where
   | Player
   | Scoreboard
   | Ocean
+  | WetSand
   deriving BEq
 
 inductive Msg where
@@ -18,6 +19,7 @@ inductive Msg where
   | Time (delta: Float): Msg
   | RequestRand (id: ID): Msg
   | Rand (id: ID) (r: Nat): Msg
+  | OceanPullingBack (max: Float): Msg
 
 class Entity (E : Type u) where
   id (entity: E): ID
