@@ -45,6 +45,14 @@ def Game.render (game: Game): IO Unit := do
     game.scoreboard.render
   return ()
 
+def Game.emit (game: Game): List Entity.Msg :=
+  List.join [
+    -- Add your new Entity here:
+    game.ocean.emit,
+    game.player.emit,
+    game.scoreboard.emit
+  ]
+
 private def Game.updates (game: Game) (delta : Float) (events: List Entity.Msg): Id Game := do
   let mut game := game
   for event in events do
@@ -52,9 +60,9 @@ private def Game.updates (game: Game) (delta : Float) (events: List Entity.Msg):
   return game
 
 def Game.step (game: Game) (delta : Float) (externalEvents: List Entity.Msg): Game :=
-  let collisions := Collision.detects [(game.ocean.id, game.ocean.bounds), (game.player.id, game.player.bounds)]
-  let collisionsMsgs := List.map (λ collision => Entity.Msg.Collision collision.1 collision.2) collisions
-  let allEvents := List.append externalEvents collisionsMsgs
+  let emits := game.emit
+  let collisions := Collision.detectCollisions emits
+  let allEvents := List.append emits (List.append externalEvents collisions)
   Game.updates game delta allEvents
 
 end Game

@@ -21,4 +21,15 @@ def detects {EntityID: Type} (entities: List (EntityID × List Rectangle)): Id (
             collisions := collisions.push (src.1, dst.1)
   return collisions.toList
 
+def detectCollisions (msgs: List Entity.Msg) : (List Entity.Msg) :=
+  let idBoxPairs := List.filterMap (λ msg =>
+    match msg with
+    | Entity.Msg.Bounds id boxes =>
+      Option.some (id, boxes)
+    | _otherwise =>
+      Option.none
+  ) msgs
+  let collisions := detects idBoxPairs
+  List.map (λ collision => Entity.Msg.Collision collision.1 collision.2) collisions
+
 end Collision

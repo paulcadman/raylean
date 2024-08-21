@@ -19,6 +19,8 @@ def Scoreboard.update (entity: Scoreboard) (_delta : Float) (msg: Entity.Msg) : 
   | Entity.Msg.Collision Entity.ID.Ocean Entity.ID.Player => { over := True }
   | _otherwise => entity
 
+def Scoreboard.emit (_entity: Scoreboard): List Entity.Msg := []
+
 def Scoreboard.bounds (_entity: Scoreboard): List Rectangle := []
 
 def Scoreboard.render (entity: Scoreboard): IO Unit := do
@@ -28,6 +30,7 @@ def Scoreboard.render (entity: Scoreboard): IO Unit := do
 
 instance : Entity.Entity Scoreboard where
   id := Scoreboard.id
+  emit := Scoreboard.emit
   update := Scoreboard.update
   bounds := Scoreboard.bounds
   render := Scoreboard.render

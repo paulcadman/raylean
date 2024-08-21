@@ -24,6 +24,21 @@ def init (maxWidth: Nat) (height: Nat) : Ocean :=
 def Ocean.id (_entity: Ocean): Entity.ID :=
   Entity.ID.Ocean
 
+private def Ocean.box (ocean: Ocean): Rectangle :=
+  {
+    x := ocean.maxWidth - ocean.width,
+    y := 0,
+    width := ocean.width,
+    height := ocean.height,
+  }
+
+def Ocean.bounds (ocean: Ocean): List Rectangle :=
+  [ocean.box]
+
+def Ocean.emit (entity: Ocean): List Entity.Msg := [
+    Entity.Msg.Bounds entity.id entity.bounds
+  ]
+
 def Ocean.update (ocean: Ocean) (delta : Float) (_msg: Entity.Msg): Id Ocean := do
   let move := ocean.speed * delta
   let mut width := ocean.width + move
@@ -38,23 +53,13 @@ def Ocean.update (ocean: Ocean) (delta : Float) (_msg: Entity.Msg): Id Ocean := 
     speed := speed,
   }
 
-private def Ocean.box (ocean: Ocean): Rectangle :=
-  {
-    x := ocean.maxWidth - ocean.width,
-    y := 0,
-    width := ocean.width,
-    height := ocean.height,
-  }
-
-def Ocean.bounds (ocean: Ocean): List Rectangle :=
-  [ocean.box]
-
 def Ocean.render (ocean: Ocean): IO Unit := do
   let rect: Rectangle := ocean.box
   drawRectangleRec rect Color.blue
 
 instance : Entity.Entity Ocean where
   id := Ocean.id
+  emit := Ocean.emit
   update := Ocean.update
   bounds := Ocean.bounds
   render := Ocean.render

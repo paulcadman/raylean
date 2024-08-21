@@ -20,6 +20,18 @@ def init (position: Vector2): Player :=
 def Player.id (_entity: Player): Entity.ID :=
   Entity.ID.Player
 
+def Player.bounds (p: Player): List Rectangle :=
+  [{
+    x := p.position.x - p.radius,
+    y := p.position.y + p.radius,
+    width := p.radius * 2,
+    height := p.radius * 2,
+  }]
+
+def Player.emit (entity: Player): List Entity.Msg := [
+    Entity.Msg.Bounds entity.id entity.bounds
+  ]
+
 private def Player.modifyPositionX (p: Player) (f : Float → Float) : Player :=
   { p with position := ⟨ f p.position.x, p.position.y ⟩}
 
@@ -40,20 +52,13 @@ def Player.update (p: Player) (delta: Float) (msg: Entity.Msg): Player :=
   | _otherwise =>
     p
 
-def Player.bounds (p: Player): List Rectangle :=
-  [{
-    x := p.position.x - p.radius,
-    y := p.position.y + p.radius,
-    width := p.radius * 2,
-    height := p.radius * 2,
-  }]
-
 -- IO is required, since we are drawing
 def Player.render (p: Player): IO Unit := do
   drawCircleV p.position p.radius Color.green
 
 instance : Entity.Entity Player where
   id := Player.id
+  emit := Player.emit
   update := Player.update
   bounds := Player.bounds
   render := Player.render
