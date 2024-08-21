@@ -21,10 +21,4 @@ def detects {EntityID: Type} (entities: List (EntityID × List Rectangle)): Id (
             collisions := collisions.push (src.1, dst.1)
   return collisions.toList
 
--- detect if there is a collision between multiple entities
-def detectEvents (entities: Entity.Entities): List Entity.Msg :=
-  let idBoundPairs : List (Entity.ID × List Rectangle) := entities.idBoundPairs
-  let collisions := Collision.detects idBoundPairs
-  List.map (λ collision => Entity.Msg.Collision collision.1 collision.2) collisions
-
 end Collision
