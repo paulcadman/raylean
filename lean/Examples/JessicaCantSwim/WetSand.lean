@@ -1,7 +1,7 @@
 import «Raylib»
 import Raylib.Types
 
-import Examples.JessicaCantSwim.Entity
+import Examples.JessicaCantSwim.Types
 
 namespace WetSand
 
@@ -23,8 +23,8 @@ def init (maxWidth: Nat) (height: Nat) : WetSand :=
     countdown := 0,
   }
 
-def WetSand.id (_entity: WetSand): Entity.ID :=
-  Entity.ID.WetSand
+def WetSand.id (_wetsand: WetSand): Types.ID :=
+  Types.ID.WetSand
 
 private def WetSand.box (wetsand: WetSand): Rectangle :=
   {
@@ -34,12 +34,12 @@ private def WetSand.box (wetsand: WetSand): Rectangle :=
     height := wetsand.height,
   }
 
-def WetSand.emit (entity: WetSand): List Entity.Msg :=
-  [ Entity.Msg.Bounds entity.id [entity.box] ]
+def WetSand.emit (wetsand: WetSand): List Types.Msg :=
+  [ Types.Msg.Bounds wetsand.id [wetsand.box] ]
 
-def WetSand.update (wetsand: WetSand) (msg: Entity.Msg): Id WetSand := do
+def WetSand.update (wetsand: WetSand) (msg: Types.Msg): Id WetSand := do
   match msg with
-  | Entity.Msg.OceanPullingBack max =>
+  | Types.Msg.OceanPullingBack max =>
     if max < wetsand.width then
        -- Still pulling back from ocean that was out further
       return wetsand
@@ -51,7 +51,7 @@ def WetSand.update (wetsand: WetSand) (msg: Entity.Msg): Id WetSand := do
         width := max,
         speed := 0,
       }
-  | Entity.Msg.Time delta =>
+  | Types.Msg.Time delta =>
     if wetsand.width <= 0 then return wetsand
     if wetsand.countdown > 0
     then
@@ -77,7 +77,7 @@ def WetSand.render (wetsand: WetSand): IO Unit := do
   let rect: Rectangle := wetsand.box
   drawRectangleRec rect Color.red
 
-instance : Entity.Entity WetSand where
+instance : Types.Model WetSand where
   emit := WetSand.emit
   update := WetSand.update
   render := WetSand.render

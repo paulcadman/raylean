@@ -1,6 +1,6 @@
 import «Raylib»
 
-import Examples.JessicaCantSwim.Entity
+import Examples.JessicaCantSwim.Types
 
 namespace Scoreboard
 
@@ -16,34 +16,34 @@ def init: Scoreboard :=
     score := 0,
   }
 
-def Scoreboard.update (entity: Scoreboard) (msg: Entity.Msg) : Scoreboard :=
+def Scoreboard.update (scoreboard: Scoreboard) (msg: Types.Msg) : Scoreboard :=
   match msg with
-  | Entity.Msg.Collision Entity.ID.Ocean Entity.ID.Player => { entity with inOcean := True }
-  | Entity.Msg.Collision Entity.ID.WetSand Entity.ID.Player => { entity with onWetsand := True }
-  | Entity.Msg.Collision (Entity.ID.Shell _) Entity.ID.Player =>
-    if !entity.inOcean
-    then { entity with
-      score := entity.score + 10,
-    } else entity
-  | Entity.Msg.Time delta =>
-    if !entity.inOcean && entity.onWetsand
-    then { entity with
+  | Types.Msg.Collision Types.ID.Ocean Types.ID.Player => { scoreboard with inOcean := True }
+  | Types.Msg.Collision Types.ID.WetSand Types.ID.Player => { scoreboard with onWetsand := True }
+  | Types.Msg.Collision (Types.ID.Shell _) Types.ID.Player =>
+    if !scoreboard.inOcean
+    then { scoreboard with
+      score := scoreboard.score + 10,
+    } else scoreboard
+  | Types.Msg.Time delta =>
+    if !scoreboard.inOcean && scoreboard.onWetsand
+    then { scoreboard with
       onWetsand := False,
-      score := entity.score + delta,
+      score := scoreboard.score + delta,
     }
-    else entity
-  | _otherwise => entity
+    else scoreboard
+  | _otherwise => scoreboard
 
-def Scoreboard.emit (_entity: Scoreboard): List Entity.Msg := []
+def Scoreboard.emit (_scoreboard: Scoreboard): List Types.Msg := []
 
-def Scoreboard.render (entity: Scoreboard): IO Unit := do
-  let scoreText := reprStr (entity.score.toUInt64)
-  if entity.inOcean then
+def Scoreboard.render (scoreboard: Scoreboard): IO Unit := do
+  let scoreText := reprStr (scoreboard.score.toUInt64)
+  if scoreboard.inOcean then
     drawText ("Game Over! Top Score: " ++ scoreText) 10 10 24 Color.black
     return ()
   drawText scoreText 10 10 24 Color.black
 
-instance : Entity.Entity Scoreboard where
+instance : Types.Model Scoreboard where
   emit := Scoreboard.emit
   update := Scoreboard.update
   render := Scoreboard.render
