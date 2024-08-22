@@ -21,6 +21,18 @@ def rands (msgs: List Types.Msg) : IO (List Types.Msg) := do
       continue
   return rs.toList
 
+def getKeys: IO (List Keys.Keys) := do
+  let mut keys := #[]
+  if (← isKeyDown Key.down)
+    then keys := keys.push Keys.Keys.Down
+  if (← isKeyDown Key.up)
+    then keys := keys.push Keys.Keys.Up
+  if (← isKeyDown Key.left)
+    then keys := keys.push Keys.Keys.Left
+  if (← isKeyDown Key.right)
+    then keys := keys.push Keys.Keys.Right
+  return keys.toList
+
 def main : IO Unit := do
   let screenWidth: Nat := 800
   let screenHeight : Nat := 450
@@ -30,7 +42,7 @@ def main : IO Unit := do
   let mut game := Game.init startPosition screenWidth screenHeight
   while not (← windowShouldClose) do
     let delta ← getFrameTime
-    let keys ← Keys.getKeys
+    let keys ← getKeys
     let emits := game.emit
     let randMsgs ← rands emits
     let events: List Types.Msg := List.map (λ key => Types.Msg.Key key) keys
