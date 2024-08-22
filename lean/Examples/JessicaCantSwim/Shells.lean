@@ -38,7 +38,7 @@ structure Shells where
   private oceanWidth : Float
   private oceanHeight : Float
   private nextID : Nat
-  private shells : Std.HashMap Nat Shell
+  private shellsMap : Std.HashMap Nat Shell
   private timeUntilSpawn: Float
 
 def init (maxWidth: Nat) (maxHeight: Nat): Shells :=
@@ -48,12 +48,12 @@ def init (maxWidth: Nat) (maxHeight: Nat): Shells :=
     oceanWidth := 0,
     oceanHeight := maxHeight.toFloat,
     nextID := 0,
-    shells := Std.HashMap.empty,
+    shellsMap := Std.HashMap.empty,
     timeUntilSpawn := 1000,
   }
 
 def Shells.emit (entity: Shells): Id (List Entity.Msg) := do
-  let bounds := (Std.HashMap.map (λ _ shell => shell.emit) entity.shells).values
+  let bounds := (Std.HashMap.map (λ _ shell => shell.emit) entity.shellsMap).values
   if entity.timeUntilSpawn > 0 then
     return bounds
   let maxWidth := entity.oceanWidth.toUInt64.toNat
@@ -61,46 +61,55 @@ def Shells.emit (entity: Shells): Id (List Entity.Msg) := do
   bounds.concat (Entity.Msg.RequestRandPair Entity.ID.Shells (maxWidth, maxHeight) )
 
 def Shells.delete (shells: Shells) (id: Nat): Shells :=
-  let shellList := shells.shells.toList
+  let shellList := shells.shellsMap.toList
   let filteredList := List.filter (λ (shellID, _) => shellID != id) shellList
   { shells with
-    shells := Std.HashMap.ofList filteredList,
+    shellsMap := Std.HashMap.ofList filteredList,
   }
 
-def Shells.update (entity: Shells) (msg: Entity.Msg): Id Shells := do
+def Shells.add (shells: Shells) (location: Vector2): Shells :=
+  let x := (shells.maxWidth - shells.oceanWidth) + location.x
+  let coords := ⟨x, location.y⟩
+  let newShell := Shell.init shells.nextID coords
+  let shellsMap := shells.shellsMap.insert shells.nextID newShell
+  { shells with
+    timeUntilSpawn := shells.timeUntilSpawn + 3,
+    nextID := shells.nextID + 1,
+    shellsMap := shellsMap,
+  }
+
+def Shells.decSpawnTime (shells: Shells) (delta: Float): Shells :=
+  { shells with
+    timeUntilSpawn := shells.timeUntilSpawn - delta,
+  }
+
+def Shells.resetSpawnTime (shells: Shells): Shells :=
+  { shells with
+    timeUntilSpawn := 1,
+  }
+
+def Shells.update (shells: Shells) (msg: Entity.Msg): Id Shells := do
   match msg with
   | Entity.Msg.ResponseRandPair Entity.ID.Shells (rx, ry) =>
-    let x := (entity.maxWidth - entity.oceanWidth) + rx.toFloat
-    let coords := ⟨x, ry.toFloat⟩
-    let newShell := Shell.init entity.nextID coords
-    let shells := entity.shells.insert entity.nextID newShell
-    return { entity with
-      timeUntilSpawn := entity.timeUntilSpawn + 3,
-      nextID := entity.nextID + 1,
-      shells := shells,
-    }
+    shells.add ⟨ rx.toFloat, ry.toFloat ⟩
   | Entity.Msg.Bounds Entity.ID.Ocean boxes =>
-    let mut oceanWidth := entity.oceanWidth
+    let mut oceanWidth := shells.oceanWidth
     for box in boxes do
       oceanWidth := box.width
-    return { entity with
+    return { shells with
       oceanWidth := oceanWidth,
     }
   | Entity.Msg.Collision (Entity.ID.Shell id) Entity.ID.Player =>
-    entity.delete id
+    shells.delete id
   | Entity.Msg.OceanPullingBack _ =>
-    return { entity with
-      timeUntilSpawn := 1,
-    }
+    shells.resetSpawnTime
   | Entity.Msg.Time delta =>
-    return { entity with
-      timeUntilSpawn := entity.timeUntilSpawn - delta,
-    }
+    shells.decSpawnTime delta
   | _otherwise =>
-    entity
+    shells
 
 def Shells.render (entity: Shells): IO Unit := do
-  for (_, shell) in entity.shells do
+  for (_, shell) in entity.shellsMap do
     shell.render
 
 instance : Entity.Entity Shells where
