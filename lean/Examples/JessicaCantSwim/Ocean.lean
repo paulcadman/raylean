@@ -48,8 +48,8 @@ def Ocean.emit (entity: Ocean): List Entity.Msg :=
 
 def Ocean.update (ocean: Ocean) (msg: Entity.Msg): Id Ocean := do
   match msg with
-  | Entity.Msg.ResponseRand id r =>
-    if (id == ocean.id && ocean.resetting)
+  | Entity.Msg.ResponseRand Entity.ID.Ocean r =>
+    if ocean.resetting
     then return {
       resetting := false,
       maxWidth := ocean.maxWidth,
