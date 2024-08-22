@@ -1,10 +1,10 @@
 import Examples.JessicaCantSwim.Keys
 
-namespace Entity
+namespace Types
 
 inductive ID where
   | All
-  -- Add your new Entity here:
+  -- Add your new Model here:
   | Player
   | Scoreboard
   | Ocean
@@ -27,9 +27,9 @@ inductive Msg where
 
   | OceanPullingBack (max: Float): Msg
 
-class Entity (E : Type u) where
-  emit (entity: E): List Msg
-  update (entity: E) (msg: Msg) : E
-  render (entity: E): IO Unit
+class Model (M : Type u) where
+  emit (model: M): List Msg
+  update (model: M) (msg: Msg) : M
+  render (model: M): IO Unit
 
-end Entity
+end Types

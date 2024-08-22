@@ -1,7 +1,7 @@
 import «Raylib»
 
 import Examples.JessicaCantSwim.Keys
-import Examples.JessicaCantSwim.Entity
+import Examples.JessicaCantSwim.Types
 
 namespace Player
 
@@ -19,8 +19,8 @@ def init (position: Vector2): Player :=
     direction := ⟨0, 0⟩,
   }
 
-private def Player.id (_entity: Player): Entity.ID :=
-  Entity.ID.Player
+private def Player.id (_player: Player): Types.ID :=
+  Types.ID.Player
 
 def Player.bounds (p: Player): List Rectangle :=
   [{
@@ -30,8 +30,8 @@ def Player.bounds (p: Player): List Rectangle :=
     height := p.radius * 2,
   }]
 
-def Player.emit (entity: Player): List Entity.Msg := [
-    Entity.Msg.Bounds entity.id entity.bounds
+def Player.emit (player: Player): List Types.Msg := [
+    Types.Msg.Bounds player.id player.bounds
   ]
 
 private def Player.left (p: Player): Player :=
@@ -54,20 +54,20 @@ private def Player.move (p: Player) (delta: Float): Player :=
     position := newPosition,
   }
 
-def Player.update (p: Player) (msg: Entity.Msg): Player :=
+def Player.update (p: Player) (msg: Types.Msg): Player :=
   match msg with
-  | Entity.Msg.Key Keys.Keys.Left => p.left
-  | Entity.Msg.Key Keys.Keys.Right => p.right
-  | Entity.Msg.Key Keys.Keys.Up => p.up
-  | Entity.Msg.Key Keys.Keys.Down => p.down
-  | Entity.Msg.Time delta => p.move delta
+  | Types.Msg.Key Keys.Keys.Left => p.left
+  | Types.Msg.Key Keys.Keys.Right => p.right
+  | Types.Msg.Key Keys.Keys.Up => p.up
+  | Types.Msg.Key Keys.Keys.Down => p.down
+  | Types.Msg.Time delta => p.move delta
   | _otherwise => p
 
 -- IO is required, since we are drawing
 def Player.render (p: Player): IO Unit := do
   drawCircleV p.position p.radius Color.green
 
-instance : Entity.Entity Player where
+instance : Types.Model Player where
   emit := Player.emit
   update := Player.update
   render := Player.render

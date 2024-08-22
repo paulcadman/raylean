@@ -1,7 +1,7 @@
 import «Raylib»
 import Raylib.Types
 
-import Examples.JessicaCantSwim.Entity
+import Examples.JessicaCantSwim.Types
 
 namespace Ocean
 
@@ -25,8 +25,8 @@ def init (maxWidth: Nat) (height: Nat) : Ocean :=
     pulledback := false
   }
 
-private def Ocean.id (_entity: Ocean): Entity.ID :=
-  Entity.ID.Ocean
+private def Ocean.id (_ocean: Ocean): Types.ID :=
+  Types.ID.Ocean
 
 private def Ocean.box (ocean: Ocean): Rectangle :=
   {
@@ -36,13 +36,13 @@ private def Ocean.box (ocean: Ocean): Rectangle :=
     height := ocean.height,
   }
 
-def Ocean.emit (entity: Ocean): List Entity.Msg :=
-  let boundsMsg := Entity.Msg.Bounds entity.id [entity.box]
-  let pullingBackMsg := Entity.Msg.OceanPullingBack entity.width
-  let requestRandMsg := Entity.Msg.RequestRand entity.id 100
-  if entity.speed < 0 && !entity.pulledback
+def Ocean.emit (ocean: Ocean): List Types.Msg :=
+  let boundsMsg := Types.Msg.Bounds ocean.id [ocean.box]
+  let pullingBackMsg := Types.Msg.OceanPullingBack ocean.width
+  let requestRandMsg := Types.Msg.RequestRand ocean.id 100
+  if ocean.speed < 0 && !ocean.pulledback
     then [ boundsMsg, pullingBackMsg]
-  else if entity.resetting
+  else if ocean.resetting
     then [ requestRandMsg ]
   else [ boundsMsg ]
 
@@ -68,21 +68,21 @@ private def Ocean.move (ocean: Ocean) (delta: Float): Ocean :=
     speed := speed,
   }
 
-def Ocean.update (ocean: Ocean) (msg: Entity.Msg): Ocean :=
+def Ocean.update (ocean: Ocean) (msg: Types.Msg): Ocean :=
   match msg with
-  | Entity.Msg.ResponseRand Entity.ID.Ocean r =>
+  | Types.Msg.ResponseRand Types.ID.Ocean r =>
     if ocean.resetting
     then ocean.reset r.toFloat
     else ocean
-  | Entity.Msg.OceanPullingBack _ => ocean.alreadyPulledBack
-  | Entity.Msg.Time delta => ocean.move delta
+  | Types.Msg.OceanPullingBack _ => ocean.alreadyPulledBack
+  | Types.Msg.Time delta => ocean.move delta
   | _otherwise => ocean
 
 def Ocean.render (ocean: Ocean): IO Unit := do
   let rect: Rectangle := ocean.box
   drawRectangleRec rect Color.blue
 
-instance : Entity.Entity Ocean where
+instance : Types.Model Ocean where
   emit := Ocean.emit
   update := Ocean.update
   render := Ocean.render

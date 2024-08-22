@@ -2,7 +2,7 @@ import Std
 
 import «Raylib»
 
-import Examples.JessicaCantSwim.Entity
+import Examples.JessicaCantSwim.Types
 
 namespace Shells
 
@@ -26,8 +26,8 @@ def Shell.bounds (s: Shell): List Rectangle :=
     height := s.radius * 2,
   }]
 
-def Shell.emit (entity: Shell): Entity.Msg :=
-  Entity.Msg.Bounds (Entity.ID.Shell entity.id) entity.bounds
+def Shell.emit (shell: Shell): Types.Msg :=
+  Types.Msg.Bounds (Types.ID.Shell shell.id) shell.bounds
 
 def Shell.render (s: Shell): IO Unit := do
   drawCircleV s.position s.radius Color.yellow
@@ -52,13 +52,13 @@ def init (maxWidth: Nat) (maxHeight: Nat): Shells :=
     timeUntilSpawn := 1000,
   }
 
-def Shells.emit (entity: Shells): Id (List Entity.Msg) := do
-  let bounds := (Std.HashMap.map (λ _ shell => shell.emit) entity.shellsMap).values
-  if entity.timeUntilSpawn > 0 then
+def Shells.emit (shells: Shells): Id (List Types.Msg) := do
+  let bounds := (Std.HashMap.map (λ _ shell => shell.emit) shells.shellsMap).values
+  if shells.timeUntilSpawn > 0 then
     return bounds
-  let maxWidth := entity.oceanWidth.toUInt64.toNat
-  let maxHeight := entity.oceanHeight.toUInt64.toNat
-  bounds.concat (Entity.Msg.RequestRandPair Entity.ID.Shells (maxWidth, maxHeight) )
+  let maxWidth := shells.oceanWidth.toUInt64.toNat
+  let maxHeight := shells.oceanHeight.toUInt64.toNat
+  bounds.concat (Types.Msg.RequestRandPair Types.ID.Shells (maxWidth, maxHeight) )
 
 def Shells.delete (shells: Shells) (id: Nat): Shells :=
   let shellList := shells.shellsMap.toList
@@ -88,31 +88,31 @@ def Shells.resetSpawnTime (shells: Shells): Shells :=
     timeUntilSpawn := 1,
   }
 
-def Shells.update (shells: Shells) (msg: Entity.Msg): Id Shells := do
+def Shells.update (shells: Shells) (msg: Types.Msg): Id Shells := do
   match msg with
-  | Entity.Msg.ResponseRandPair Entity.ID.Shells (rx, ry) =>
+  | Types.Msg.ResponseRandPair Types.ID.Shells (rx, ry) =>
     shells.add ⟨ rx.toFloat, ry.toFloat ⟩
-  | Entity.Msg.Bounds Entity.ID.Ocean boxes =>
+  | Types.Msg.Bounds Types.ID.Ocean boxes =>
     let mut oceanWidth := shells.oceanWidth
     for box in boxes do
       oceanWidth := box.width
     return { shells with
       oceanWidth := oceanWidth,
     }
-  | Entity.Msg.Collision (Entity.ID.Shell id) Entity.ID.Player =>
+  | Types.Msg.Collision (Types.ID.Shell id) Types.ID.Player =>
     shells.delete id
-  | Entity.Msg.OceanPullingBack _ =>
+  | Types.Msg.OceanPullingBack _ =>
     shells.resetSpawnTime
-  | Entity.Msg.Time delta =>
+  | Types.Msg.Time delta =>
     shells.decSpawnTime delta
   | _otherwise =>
     shells
 
-def Shells.render (entity: Shells): IO Unit := do
-  for (_, shell) in entity.shellsMap do
+def Shells.render (shells: Shells): IO Unit := do
+  for (_, shell) in shells.shellsMap do
     shell.render
 
-instance : Entity.Entity Shells where
+instance : Types.Model Shells where
   emit := Shells.emit
   update := Shells.update
   render := Shells.render
