@@ -69,9 +69,7 @@ def Shells.delete (shells: Shells) (id: Nat): Shells :=
 
 def Shells.update (entity: Shells) (msg: Entity.Msg): Id Shells := do
   match msg with
-  | Entity.Msg.ResponseRandPair id (rx, ry) =>
-    if id != Entity.ID.Shells then
-      return entity
+  | Entity.Msg.ResponseRandPair Entity.ID.Shells (rx, ry) =>
     let x := (entity.maxWidth - entity.oceanWidth) + rx.toFloat
     let coords := ⟨x, ry.toFloat⟩
     let newShell := Shell.init entity.nextID coords
@@ -81,9 +79,7 @@ def Shells.update (entity: Shells) (msg: Entity.Msg): Id Shells := do
       nextID := entity.nextID + 1,
       shells := shells,
     }
-  | Entity.Msg.Bounds id boxes =>
-    if id != Entity.ID.Ocean then
-      return entity
+  | Entity.Msg.Bounds Entity.ID.Ocean boxes =>
     let mut oceanWidth := entity.oceanWidth
     for box in boxes do
       oceanWidth := box.width
