@@ -2,6 +2,7 @@ import Std
 
 import «Raylib»
 
+import Examples.JessicaCantSwim.Rand
 import Examples.JessicaCantSwim.Types
 import Examples.JessicaCantSwim.Draw
 
@@ -41,8 +42,9 @@ structure Shells where
   private nextID : Nat
   private shellsMap : Std.HashMap Nat Shell
   private timeUntilSpawn: Float
+  private rand: Rand.Generator
 
-def init (maxWidth: Nat) (maxHeight: Nat): Shells :=
+def init (maxWidth: Nat) (maxHeight: Nat) (r: Rand.Generator): Shells :=
   {
     maxWidth := maxWidth.toFloat,
     maxHeight := maxHeight.toFloat,
@@ -51,15 +53,11 @@ def init (maxWidth: Nat) (maxHeight: Nat): Shells :=
     nextID := 0,
     shellsMap := Std.HashMap.empty,
     timeUntilSpawn := 1000,
+    rand := r,
   }
 
-def Shells.emit (shells: Shells): Id (List Types.Msg) := do
-  let bounds := (Std.HashMap.map (λ _ shell => shell.emit) shells.shellsMap).values
-  if shells.timeUntilSpawn > 0 then
-    return bounds
-  let maxWidth := shells.oceanWidth.toUInt64.toNat
-  let maxHeight := shells.oceanHeight.toUInt64.toNat
-  bounds.concat (Types.Msg.RequestRandPair Types.ID.Shells (maxWidth, maxHeight) )
+def Shells.emit (shells: Shells): List Types.Msg :=
+  (Std.HashMap.map (λ _ shell => shell.emit) shells.shellsMap).values
 
 def Shells.delete (shells: Shells) (id: Nat): Shells :=
   let shellList := shells.shellsMap.toList
@@ -68,7 +66,12 @@ def Shells.delete (shells: Shells) (id: Nat): Shells :=
     shellsMap := Std.HashMap.ofList filteredList,
   }
 
-def Shells.add (shells: Shells) (location: Vector2): Shells :=
+def Shells.add (shells: Shells): Shells :=
+  let (newNum1, newGen1) := shells.rand.next
+  let (newNum2, newGen2) := newGen1.next
+  let maxWidth := shells.oceanWidth.toUInt64.toNat
+  let maxHeight := shells.oceanHeight.toUInt64.toNat
+  let location: Vector2 := ⟨ (newNum1 % maxWidth).toFloat, (newNum2 % maxHeight).toFloat ⟩
   let x := (shells.maxWidth - shells.oceanWidth) + location.x
   let coords := ⟨x, location.y⟩
   let newShell := Shell.init shells.nextID coords
@@ -77,10 +80,13 @@ def Shells.add (shells: Shells) (location: Vector2): Shells :=
     timeUntilSpawn := shells.timeUntilSpawn + 3,
     nextID := shells.nextID + 1,
     shellsMap := shellsMap,
+    rand := newGen2,
   }
 
 def Shells.decSpawnTime (shells: Shells) (delta: Float): Shells :=
-  { shells with
+  if shells.timeUntilSpawn < 0
+  then shells.add
+  else { shells with
     timeUntilSpawn := shells.timeUntilSpawn - delta,
   }
 
@@ -91,8 +97,6 @@ def Shells.resetSpawnTime (shells: Shells): Shells :=
 
 def Shells.update (shells: Shells) (msg: Types.Msg): Id Shells := do
   match msg with
-  | Types.Msg.ResponseRandPair Types.ID.Shells (rx, ry) =>
-    shells.add ⟨ rx.toFloat, ry.toFloat ⟩
   | Types.Msg.Bounds Types.ID.Ocean boxes =>
     let mut oceanWidth := shells.oceanWidth
     for box in boxes do
