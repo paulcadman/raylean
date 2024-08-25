@@ -1,5 +1,6 @@
 import Raylib.Types
 
+import Examples.JessicaCantSwim.Draw
 import Examples.JessicaCantSwim.Types
 import Examples.JessicaCantSwim.Camera
 import Examples.JessicaCantSwim.Collision
@@ -44,16 +45,15 @@ private def Game.update (game: Game) (msg: Types.Msg): Game :=
     shells := game.shells.update msg
   }
 
-def Game.render (game: Game): IO Unit := do
-  clearBackground Color.Raylib.lightgray
-  renderWithCamera2D game.camera.camera do
+def Game.render (game: Game): List Draw.Draw :=
+  List.join [
     -- Add your new Model here:
-    game.wetsand.render
-    game.shells.render
-    game.ocean.render
-    game.player.render
-    game.scoreboard.render
-  return ()
+    game.wetsand.render,
+    game.shells.render,
+    game.ocean.render,
+    game.player.render,
+    game.scoreboard.render,
+  ]
 
 def Game.emit (game: Game): List Types.Msg :=
   List.join [

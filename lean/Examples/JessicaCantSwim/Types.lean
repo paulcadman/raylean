@@ -1,4 +1,5 @@
 import Examples.JessicaCantSwim.Keys
+import Examples.JessicaCantSwim.Draw
 
 namespace Types
 
@@ -30,6 +31,6 @@ inductive Msg where
 class Model (M : Type u) where
   emit (model: M): List Msg
   update (model: M) (msg: Msg) : M
-  render (model: M): IO Unit
+  render (model: M): List Draw.Draw
 
 end Types

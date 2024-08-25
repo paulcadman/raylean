@@ -3,6 +3,7 @@ import Std
 import «Raylib»
 
 import Examples.JessicaCantSwim.Types
+import Examples.JessicaCantSwim.Draw
 
 namespace Shells
 
@@ -29,8 +30,8 @@ def Shell.bounds (s: Shell): List Rectangle :=
 def Shell.emit (shell: Shell): Types.Msg :=
   Types.Msg.Bounds (Types.ID.Shell shell.id) shell.bounds
 
-def Shell.render (s: Shell): IO Unit := do
-  drawCircleV s.position s.radius Color.yellow
+def Shell.render (s: Shell): Draw.Draw :=
+  Draw.Draw.Circle s.position s.radius Color.yellow
 
 structure Shells where
   private maxWidth : Float
@@ -108,9 +109,8 @@ def Shells.update (shells: Shells) (msg: Types.Msg): Id Shells := do
   | _otherwise =>
     shells
 
-def Shells.render (shells: Shells): IO Unit := do
-  for (_, shell) in shells.shellsMap do
-    shell.render
+def Shells.render (shells: Shells): List Draw.Draw :=
+  List.map (·.render) shells.shellsMap.values
 
 instance : Types.Model Shells where
   emit := Shells.emit

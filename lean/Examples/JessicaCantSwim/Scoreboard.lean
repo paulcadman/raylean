@@ -36,12 +36,11 @@ def Scoreboard.update (scoreboard: Scoreboard) (msg: Types.Msg) : Scoreboard :=
 
 def Scoreboard.emit (_scoreboard: Scoreboard): List Types.Msg := []
 
-def Scoreboard.render (scoreboard: Scoreboard): IO Unit := do
+def Scoreboard.render (scoreboard: Scoreboard): Id (List (Draw.Draw)) := do
   let scoreText := reprStr (scoreboard.score.toUInt64)
   if scoreboard.inOcean then
-    drawText ("Game Over! Top Score: " ++ scoreText) 10 10 24 Color.black
-    return ()
-  drawText scoreText 10 10 24 Color.black
+    return [Draw.Draw.Text ("Game Over! Top Score: " ++ scoreText) 10 10 24 Color.black]
+  return [Draw.Draw.Text scoreText 10 10 24 Color.black]
 
 instance : Types.Model Scoreboard where
   emit := Scoreboard.emit
