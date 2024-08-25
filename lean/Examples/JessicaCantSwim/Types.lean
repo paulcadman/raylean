@@ -31,6 +31,6 @@ inductive Msg where
 class Model (M : Type u) where
   emit (model: M): List Msg
   update (model: M) (msg: Msg) : M
-  render (model: M): List Draw.Draw
+  view (model: M): List Draw.Draw
 
 end Types

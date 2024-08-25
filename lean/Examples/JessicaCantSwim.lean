@@ -61,7 +61,7 @@ def main : IO Unit := do
     let randMsgs ← rands emits
     let events: List Types.Msg := List.map (λ key => Types.Msg.Key key) keys
     game := game.step delta (List.join [events, emits, randMsgs])
-    let drawings := game.render
+    let drawings := game.view
     renderFrame do
       clearBackground Color.Raylib.lightgray
       renderWithCamera2D game.camera.camera (draws drawings)

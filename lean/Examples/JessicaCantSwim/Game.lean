@@ -45,14 +45,14 @@ private def Game.update (game: Game) (msg: Types.Msg): Game :=
     shells := game.shells.update msg
   }
 
-def Game.render (game: Game): List Draw.Draw :=
+def Game.view (game: Game): List Draw.Draw :=
   List.join [
     -- Add your new Model here:
-    game.wetsand.render,
-    game.shells.render,
-    game.ocean.render,
-    game.player.render,
-    game.scoreboard.render,
+    game.wetsand.view,
+    game.shells.view,
+    game.ocean.view,
+    game.player.view,
+    game.scoreboard.view,
   ]
 
 def Game.emit (game: Game): List Types.Msg :=

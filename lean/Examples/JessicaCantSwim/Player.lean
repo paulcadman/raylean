@@ -64,12 +64,12 @@ def Player.update (p: Player) (msg: Types.Msg): Player :=
   | _otherwise => p
 
 -- IO is required, since we are drawing
-def Player.render (p: Player): List Draw.Draw :=
+def Player.view (p: Player): List Draw.Draw :=
   [Draw.Draw.Circle p.position p.radius Color.green]
 
 instance : Types.Model Player where
   emit := Player.emit
   update := Player.update
-  render := Player.render
+  view := Player.view
 
 end Player
