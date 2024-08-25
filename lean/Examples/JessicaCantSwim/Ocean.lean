@@ -78,12 +78,12 @@ def Ocean.update (ocean: Ocean) (msg: Types.Msg): Ocean :=
   | Types.Msg.Time delta => ocean.move delta
   | _otherwise => ocean
 
-def Ocean.render (ocean: Ocean): List Draw.Draw :=
+def Ocean.view (ocean: Ocean): List Draw.Draw :=
   [Draw.Draw.Rectangle ocean.box Color.blue]
 
 instance : Types.Model Ocean where
   emit := Ocean.emit
   update := Ocean.update
-  render := Ocean.render
+  view := Ocean.view
 
 end Ocean

@@ -30,7 +30,7 @@ def Shell.bounds (s: Shell): List Rectangle :=
 def Shell.emit (shell: Shell): Types.Msg :=
   Types.Msg.Bounds (Types.ID.Shell shell.id) shell.bounds
 
-def Shell.render (s: Shell): Draw.Draw :=
+def Shell.view (s: Shell): Draw.Draw :=
   Draw.Draw.Circle s.position s.radius Color.yellow
 
 structure Shells where
@@ -109,12 +109,12 @@ def Shells.update (shells: Shells) (msg: Types.Msg): Id Shells := do
   | _otherwise =>
     shells
 
-def Shells.render (shells: Shells): List Draw.Draw :=
-  List.map (·.render) shells.shellsMap.values
+def Shells.view (shells: Shells): List Draw.Draw :=
+  List.map (·.view) shells.shellsMap.values
 
 instance : Types.Model Shells where
   emit := Shells.emit
   update := Shells.update
-  render := Shells.render
+  view := Shells.view
 
 end Shells

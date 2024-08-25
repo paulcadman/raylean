@@ -73,12 +73,12 @@ def WetSand.update (wetsand: WetSand) (msg: Types.Msg): Id WetSand := do
   | _otherwise =>
     return wetsand
 
-def WetSand.render (wetsand: WetSand): List Draw.Draw :=
+def WetSand.view (wetsand: WetSand): List Draw.Draw :=
   [Draw.Draw.Rectangle wetsand.box Color.red]
 
 instance : Types.Model WetSand where
   emit := WetSand.emit
   update := WetSand.update
-  render := WetSand.render
+  view := WetSand.view
 
 end WetSand
