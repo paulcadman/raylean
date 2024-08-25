@@ -1,6 +1,7 @@
 import «Raylib»
 
 import Examples.JessicaCantSwim.Types
+import Examples.JessicaCantSwim.Draw
 import Examples.JessicaCantSwim.Keys
 import Examples.JessicaCantSwim.Game
 
@@ -33,6 +34,19 @@ def getKeys: IO (List Keys.Keys) := do
     then keys := keys.push Keys.Keys.Right
   return keys.toList
 
+def draw (draw: Draw.Draw): IO Unit := do
+  match draw with
+  | Draw.Draw.Text text x y size color =>
+    drawText text x y size color
+  | Draw.Draw.Rectangle r color =>
+    drawRectangleRec r color
+  | Draw.Draw.Circle pos radius color =>
+    drawCircleV pos radius color
+
+def draws (drawings: List Draw.Draw): IO Unit := do
+  for drawing in drawings do
+    draw drawing
+
 def main : IO Unit := do
   let screenWidth: Nat := 800
   let screenHeight : Nat := 450
@@ -47,8 +61,10 @@ def main : IO Unit := do
     let randMsgs ← rands emits
     let events: List Types.Msg := List.map (λ key => Types.Msg.Key key) keys
     game := game.step delta (List.join [events, emits, randMsgs])
+    let drawings := game.render
     renderFrame do
-      game.render
+      clearBackground Color.Raylib.lightgray
+      renderWithCamera2D game.camera.camera (draws drawings)
   closeWindow
 
 end JessicaCantSwim

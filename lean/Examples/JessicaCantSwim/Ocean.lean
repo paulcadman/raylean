@@ -78,9 +78,8 @@ def Ocean.update (ocean: Ocean) (msg: Types.Msg): Ocean :=
   | Types.Msg.Time delta => ocean.move delta
   | _otherwise => ocean
 
-def Ocean.render (ocean: Ocean): IO Unit := do
-  let rect: Rectangle := ocean.box
-  drawRectangleRec rect Color.blue
+def Ocean.render (ocean: Ocean): List Draw.Draw :=
+  [Draw.Draw.Rectangle ocean.box Color.blue]
 
 instance : Types.Model Ocean where
   emit := Ocean.emit

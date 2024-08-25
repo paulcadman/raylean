@@ -64,8 +64,8 @@ def Player.update (p: Player) (msg: Types.Msg): Player :=
   | _otherwise => p
 
 -- IO is required, since we are drawing
-def Player.render (p: Player): IO Unit := do
-  drawCircleV p.position p.radius Color.green
+def Player.render (p: Player): List Draw.Draw :=
+  [Draw.Draw.Circle p.position p.radius Color.green]
 
 instance : Types.Model Player where
   emit := Player.emit

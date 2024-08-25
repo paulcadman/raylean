@@ -73,9 +73,8 @@ def WetSand.update (wetsand: WetSand) (msg: Types.Msg): Id WetSand := do
   | _otherwise =>
     return wetsand
 
-def WetSand.render (wetsand: WetSand): IO Unit := do
-  let rect: Rectangle := wetsand.box
-  drawRectangleRec rect Color.red
+def WetSand.render (wetsand: WetSand): List Draw.Draw :=
+  [Draw.Draw.Rectangle wetsand.box Color.red]
 
 instance : Types.Model WetSand where
   emit := WetSand.emit
