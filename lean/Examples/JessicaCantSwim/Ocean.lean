@@ -2,6 +2,7 @@ import «Raylib»
 import Raylib.Types
 
 import Examples.JessicaCantSwim.Types
+import Examples.JessicaCantSwim.Rand
 
 namespace Ocean
 
@@ -11,18 +12,18 @@ structure Ocean where
   private gravity: Float
   private width: Float
   private speed: Float
-  private resetting: Bool
   private pulledback: Bool
+  private rand: Rand.Generator
 
-def init (maxWidth: Nat) (height: Nat) : Ocean :=
+def init (maxWidth: Nat) (height: Nat) (r: Rand.Generator) : Ocean :=
   {
     width := 0,
     maxWidth := maxWidth.toFloat,
     height := height.toFloat,
     speed := 100,
     gravity := 9.8,
-    resetting := false
     pulledback := false
+    rand := r
   }
 
 private def Ocean.id (_ocean: Ocean): Types.ID :=
@@ -39,20 +40,19 @@ private def Ocean.box (ocean: Ocean): Rectangle :=
 def Ocean.emit (ocean: Ocean): List Types.Msg :=
   let boundsMsg := Types.Msg.Bounds ocean.id [ocean.box]
   let pullingBackMsg := Types.Msg.OceanPullingBack ocean.width
-  let requestRandMsg := Types.Msg.RequestRand ocean.id 100
   if ocean.speed < 0 && !ocean.pulledback
     then [ boundsMsg, pullingBackMsg]
-  else if ocean.resetting
-    then [ requestRandMsg ]
   else [ boundsMsg ]
 
 -- Once the ocean is pulled back, reset it to a new speed
-private def Ocean.reset (ocean: Ocean) (speed: Float): Ocean :=
+private def Ocean.reset (ocean: Ocean): Ocean :=
+  let (newNum, newGen) := ocean.rand.next
+  let newSpeed := (newNum % 100).toFloat
   { ocean with
-    resetting := false,
     width := 0,
-    speed := speed,
+    speed := newSpeed,
     pulledback := false,
+    rand := newGen,
   }
 
 -- Avoids sending Msg.OceanPullingBack twice
@@ -60,20 +60,18 @@ private def Ocean.alreadyPulledBack (ocean: Ocean): Ocean :=
   { ocean with pulledback := true }
 
 private def Ocean.move (ocean: Ocean) (delta: Float): Ocean :=
-  let width := ocean.width + ocean.speed * delta
-  let speed := ocean.speed - ocean.gravity * delta
-  { ocean with
-    resetting := width < 0
-    width := width,
-    speed := speed,
-  }
+  if ocean.width < 0
+  then ocean.reset
+  else
+    let width := ocean.width + ocean.speed * delta
+    let speed := ocean.speed - ocean.gravity * delta
+    { ocean with
+      width := width,
+      speed := speed,
+    }
 
 def Ocean.update (ocean: Ocean) (msg: Types.Msg): Ocean :=
   match msg with
-  | Types.Msg.ResponseRand Types.ID.Ocean r =>
-    if ocean.resetting
-    then ocean.reset r.toFloat
-    else ocean
   | Types.Msg.OceanPullingBack _ => ocean.alreadyPulledBack
   | Types.Msg.Time delta => ocean.move delta
   | _otherwise => ocean

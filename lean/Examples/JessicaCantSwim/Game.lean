@@ -1,5 +1,6 @@
 import Raylib.Types
 
+import Examples.JessicaCantSwim.Rand
 import Examples.JessicaCantSwim.Draw
 import Examples.JessicaCantSwim.Types
 import Examples.JessicaCantSwim.Camera
@@ -22,16 +23,17 @@ structure Game where
   wetsand: WetSand.WetSand
   shells: Shells.Shells
 
-def init (position: Vector2) (screenWidth: Nat) (screenHeight: Nat): Game :=
+def init (r: Rand.Generator) (position: Vector2) (screenWidth: Nat) (screenHeight: Nat): Game :=
   let camera := Camera.init position screenWidth screenHeight
+  let (oceanRand, shellsRand) := r.split
   {
     camera := camera,
     -- Add your new Model here:
     player := Player.init position,
     scoreboard := Scoreboard.init,
-    ocean := Ocean.init screenWidth screenHeight,
+    ocean := Ocean.init screenWidth screenHeight oceanRand,
     wetsand := WetSand.init screenWidth screenHeight,
-    shells := Shells.init screenWidth screenHeight,
+    shells := Shells.init screenWidth screenHeight shellsRand,
   }
 
 private def Game.update (game: Game) (msg: Types.Msg): Game :=
