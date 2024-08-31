@@ -9,13 +9,14 @@ abbrev System (w a : Type) := ReaderT w IO a
 class Elem (s : Type) where
   elemType : Type
 
-class Component (c : Type)  where
-  StorageType : Type
-  [elemInstance : Elem StorageType]
-  constraint : Elem.elemType StorageType = c
+class StorageT (α : Type) where
+  storageType : Type
 
-class Has (w : Type) (c : Type) [Component c] where
-  getStore : System w (Component.StorageType c)
+class Component (c : Type) [st : StorageT c] [Elem st.storageType] where
+  constraint : Elem.elemType st.storageType = c
+
+class Has (w : Type) (c : Type) [StorageT c] where
+  getStore : System w (StorageT.storageType c)
 
 class ExplInit (s : Type) where
   explInit : IO s
@@ -33,25 +34,25 @@ class ExplDestroy (s : Type) where
 class ExplMembers (s : Type) where
   explMembers : s → IO (Array Entity)
 
-instance [comp : Component c] : Elem (Component.StorageType c) where
-  elemType := comp.elemInstance.elemType
+instance [sa : StorageT α] [sb : StorageT β] : StorageT (α × β) where
+  storageType := sa.storageType × sb.storageType
 
--- TODO: Remove requirement to name this instance
-instance prodElemInstance [αElem : Elem α] [βElem : Elem β] : Elem (α × β) where
-  elemType : Type := αElem.elemType × βElem.elemType
+instance [StorageT α] [StorageT β] [ea : Elem (StorageT.storageType α)] [eb : Elem (StorageT.storageType β)] : Elem (StorageT.storageType (α × β)) where
+  elemType := ea.elemType × eb.elemType
 
-instance [ca : Component α] [cb : Component β] : Component (α × β) where
-  StorageType := ca.StorageType × cb.StorageType
-  elemInstance : Elem (ca.StorageType × cb.StorageType) := @prodElemInstance _ _ ca.elemInstance cb.elemInstance
-  -- TODO: Fix this mess
+instance [ea : Elem α] [eb : Elem β] : Elem (α × β) where
+  elemType := ea.elemType × eb.elemType
+
+instance [sa : StorageT α] [sb : StorageT β] [ea : Elem sa.storageType] [eb : Elem sb.storageType] [ca : Component α] [cb : Component β] : Component (α × β) where
   constraint :=
-    let p : (@Elem.elemType _ (@prodElemInstance _ _ ca.elemInstance cb.elemInstance)) = (ca.elemInstance.elemType × cb.elemInstance.elemType) := rfl
-    let p4 : (ca.elemInstance.elemType × cb.elemInstance.elemType) = (α × β) := by
+    let p1 : Elem (StorageT.storageType (α × β)) := inferInstance
+    let p2 : p1.elemType = (ea.elemType × eb.elemType) := rfl
+    let p3 : (ea.elemType × eb.elemType) = (α × β) := by
       rw [ca.constraint]
       rw [cb.constraint]
     by
-      rw [p]
-      rw [p4]
+      rw [p2]
+      rw [p3]
 
 instance [Elem α] [Elem β] [ExplGet α] [ExplGet β] : ExplGet (α × β) where
   explExists s ety := do
@@ -80,3 +81,7 @@ instance [Elem β] [ExplMembers α] [ExplGet β] : ExplMembers (α × β) where
     let (sa, sb) := s
     let as ← ExplMembers.explMembers sa
     as.filterM (ExplGet.explExists sb)
+
+instance [StorageT α] [StorageT β] [Elem (StorageT.storageType α)] [Elem (StorageT.storageType β)] [Component α] [Component β] [Has w α] [Has w β] : Has w (α × β) where
+  getStore := do
+    pure ((← Has.getStore), (← Has.getStore))
