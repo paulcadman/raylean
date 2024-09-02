@@ -10,57 +10,53 @@ structure EntityCounter where
 instance : Inhabited EntityCounter where
   default := ⟨1⟩
 
-instance : StorageT EntityCounter where
-  storageType := GlobalStorage EntityCounter
+axiom StorageEntityCounter : StorageFam EntityCounter = GlobalStorage EntityCounter
+instance : FamilyDef StorageFam EntityCounter (GlobalStorage EntityCounter) := ⟨StorageEntityCounter⟩
 
-instance : Elem (StorageT.storageType EntityCounter) where
-  elemType := inferInstanceAs (Elem (GlobalStorage EntityCounter)) |>.elemType
-
-instance : ExplGet (StorageT.storageType EntityCounter) where
-  explGet := inferInstanceAs (ExplGet (GlobalStorage EntityCounter)) |>.explGet
-  explExists := inferInstanceAs (ExplGet (GlobalStorage EntityCounter)) |>.explExists
-
-instance : ExplSet (StorageT.storageType EntityCounter) where
-  explSet := inferInstanceAs (ExplSet (GlobalStorage EntityCounter)) |>.explSet
-
-instance : Component EntityCounter where
+instance : @Component EntityCounter (GlobalStorage EntityCounter) EntityCounter _ _ where
   constraint := rfl
 
 def nextEntity
-  [Component EntityCounter]
-  [Has w EntityCounter]
-  [ExplGet (StorageT.storageType EntityCounter)]
-  [ExplSet (StorageT.storageType EntityCounter)]
+  [FamilyDef StorageFam EntityCounter s]
+  [FamilyDef ElemFam s t]
+  [@Component EntityCounter s t _ _]
+  [@Has w EntityCounter s _]
+  [@ExplGet s t _]
+  [@ExplSet s t _]
   : System w Entity := do
   let g : EntityCounter ← get global
-  set global (EntityCounter.mk (g.getCounter + 1))
+  set' global (EntityCounter.mk (g.getCounter + 1))
   return ⟨g.getCounter⟩
 
 def newEntity
-  [StorageT c]
-  [Elem (StorageT.storageType c)]
-  [Component EntityCounter]
-  [Component c]
-  [Has w EntityCounter]
-  [Has w c]
-  [ExplGet (StorageT.storageType EntityCounter)]
-  [ExplSet (StorageT.storageType EntityCounter)]
-  [ExplSet (StorageT.storageType c)]
+  [FamilyDef StorageFam c s]
+  [FamilyDef ElemFam s t]
+  [FamilyDef StorageFam EntityCounter se]
+  [FamilyDef ElemFam se te]
+  [@Component c s t _ _]
+  [@Component EntityCounter se te _ _]
+  [@Has w EntityCounter se _]
+  [@Has w c s _]
+  [@ExplGet se te _]
+  [@ExplSet se te _]
+  [@ExplSet s t _]
   (x : c) : System w Entity := do
   let ety ← nextEntity
-  set ety x
+  set' ety x
   pure ety
 
 def newEntity_
-  [StorageT c]
-  [Elem (StorageT.storageType c)]
-  [Component EntityCounter]
-  [Component c]
-  [Has w EntityCounter]
-  [Has w c]
-  [ExplGet (StorageT.storageType EntityCounter)]
-  [ExplSet (StorageT.storageType EntityCounter)]
-  [ExplSet (StorageT.storageType c)]
+  [FamilyDef StorageFam c s]
+  [FamilyDef ElemFam s t]
+  [FamilyDef StorageFam EntityCounter se]
+  [FamilyDef ElemFam se te]
+  [@Component c s t _ _]
+  [@Component EntityCounter se te _ _]
+  [@Has w EntityCounter se _]
+  [@Has w c s _]
+  [@ExplGet se te _]
+  [@ExplSet se te _]
+  [@ExplSet s t _]
   (x : c) : System w Unit := do
   let ety ← nextEntity
-  set ety x
+  set' ety x

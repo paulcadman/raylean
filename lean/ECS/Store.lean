@@ -1,6 +1,7 @@
 import Std
 
 import ECS.Basic
+import ECS.Family
 
 structure MapStorage (c : Type) where
   ref : IO.Ref (Std.HashMap Entity c)
@@ -29,17 +30,17 @@ def destroy (s : MapStorage c) (e : Entity) : IO Unit := do
 def members (s : MapStorage c) : IO (Array Entity) :=
   Std.HashMap.keysArray <$> s.ref.get
 
-instance : Elem (MapStorage c) where
-  elemType := c
+axiom ElemMapStorage : {c : Type} → ElemFam (MapStorage c) = c
+instance : FamilyDef ElemFam (MapStorage c) c := ⟨ElemMapStorage⟩
 
 instance : ExplInit (MapStorage c) where
   explInit := init
 
-instance : ExplGet (MapStorage c) where
+instance : @ExplGet (MapStorage c) c _ where
   explGet := get
   explExists := exists?
 
-instance : ExplSet (MapStorage c) where
+instance : @ExplSet (MapStorage c) c _ where
   explSet := set
 
 instance : ExplDestroy (MapStorage c) where
@@ -57,17 +58,17 @@ structure GlobalStorage (α : Type) where
 
 namespace GlobalStorage
 
-instance : Elem (GlobalStorage α) where
-  elemType := α
+axiom ElemGlobalStorage : {c : Type} → ElemFam (GlobalStorage c) = c
+instance : FamilyDef ElemFam (GlobalStorage c) c := ⟨ElemGlobalStorage⟩
 
 instance [Inhabited α] : ExplInit (GlobalStorage α) where
   explInit := GlobalStorage.mk <$> IO.mkRef default
 
-instance explGetGlobal : ExplGet (GlobalStorage α) where
+instance explGetGlobal : @ExplGet (GlobalStorage α) α _ where
   explGet s _ := s.ref.get
   explExists _ _ := pure true
 
-instance : ExplSet (GlobalStorage α) where
+instance : @ExplSet (GlobalStorage α) α _ where
   explSet s _ a := s.ref.set a
 
 end GlobalStorage
@@ -75,15 +76,15 @@ end GlobalStorage
 structure UniqueStorage (α : Type) where
   ref : IO.Ref (Option (Entity × α))
 
-instance : Elem (UniqueStorage α) where
-  elemType := α
+axiom ElemUniqueStorage : {c : Type} → ElemFam (UniqueStorage c) = c
+instance : FamilyDef ElemFam (UniqueStorage c) c := ⟨ElemUniqueStorage⟩
 
 namespace UniqueStorage
 
 instance : ExplInit (UniqueStorage α) where
   explInit := UniqueStorage.mk <$> IO.mkRef none
 
-instance : ExplGet (UniqueStorage α) where
+instance : @ExplGet (UniqueStorage α) α _ where
   explGet s _ := do
     let u ← s.ref.get
     match u with
@@ -96,7 +97,7 @@ instance : ExplGet (UniqueStorage α) where
             | (some (ety, _)) => e == ety
             | none => false
 
-instance : ExplSet (UniqueStorage α) where
+instance : @ExplSet (UniqueStorage α) α _ where
   explSet s ety c := s.ref.set (some (ety, c))
 
 instance : ExplDestroy (UniqueStorage α) where
