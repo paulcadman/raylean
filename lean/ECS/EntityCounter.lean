@@ -60,3 +60,20 @@ def newEntity_
   (x : c) : System w Unit := do
   let ety ← nextEntity
   set' ety x
+
+def asNewEntity_
+  (c : Type)
+  [FamilyDef StorageFam c s]
+  [FamilyDef ElemFam s t]
+  [FamilyDef StorageFam EntityCounter se]
+  [FamilyDef ElemFam se te]
+  [@Component c s t _ _]
+  [@Component EntityCounter se te _ _]
+  [@Has w EntityCounter se _]
+  [@Has w c s _]
+  [@ExplGet se te _]
+  [@ExplSet se te _]
+  [@ExplSet s t _]
+  (x : c) : System w Unit := do
+  let ety ← nextEntity
+  set' ety x
