@@ -3,6 +3,7 @@ import Std
 import «Raylib»
 
 import Examples.JessicaCantSwim.Rand
+import Examples.JessicaCantSwim.Shape
 import Examples.JessicaCantSwim.Types
 import Examples.JessicaCantSwim.Draw
 
@@ -10,17 +11,17 @@ namespace Shells
 
 structure Shell where
   private id: Nat
-  private position : Vector2
+  private position : Shape.Vector2
   private radius: Float
 
-def Shell.init (id: Nat) (position: Vector2): Shell :=
+def Shell.init (id: Nat) (position: Shape.Vector2): Shell :=
   {
     id := id,
     position := position,
     radius := 5,
   }
 
-def Shell.bounds (s: Shell): List Rectangle :=
+def Shell.bounds (s: Shell): List Shape.Rectangle :=
   [{
     x := s.position.x - s.radius,
     y := s.position.y + s.radius,

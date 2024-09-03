@@ -26,7 +26,7 @@ def init (maxWidth: Nat) (height: Nat) : WetSand :=
 def WetSand.id (_wetsand: WetSand): Types.ID :=
   Types.ID.WetSand
 
-private def WetSand.box (wetsand: WetSand): Rectangle :=
+private def WetSand.box (wetsand: WetSand): Shape.Rectangle :=
   {
     x := wetsand.maxWidth - wetsand.width,
     y := 0,
