@@ -1,5 +1,3 @@
-import «Raylib»
-
 import Examples.JessicaCantSwim.Keys
 import Examples.JessicaCantSwim.Shape
 import Examples.JessicaCantSwim.Types
@@ -10,7 +8,7 @@ structure Player where
   private position : Shape.Vector2
   private speed: Float
   private radius : Float
-  private direction : Vector2
+  private direction : Shape.Vector2
 
 def init (position: Shape.Vector2): Player :=
   {
@@ -66,7 +64,7 @@ def Player.update (p: Player) (msg: Types.Msg): Player :=
 
 -- IO is required, since we are drawing
 def Player.view (p: Player): List Draw.Draw :=
-  [Draw.Draw.Circle ⟨ p.position, p.radius ⟩ Color.green]
+  [Draw.Draw.Circle ⟨ p.position, p.radius ⟩ Colors.green]
 
 instance : Types.Model Player where
   emit := Player.emit

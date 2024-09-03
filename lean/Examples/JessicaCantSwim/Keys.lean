@@ -1,5 +1,3 @@
-import «Raylib»
-
 namespace Keys
 
 inductive Keys where

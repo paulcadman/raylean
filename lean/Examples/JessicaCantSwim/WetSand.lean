@@ -1,6 +1,3 @@
-import «Raylib»
-import Raylib.Types
-
 import Examples.JessicaCantSwim.Types
 
 namespace WetSand
@@ -74,7 +71,7 @@ def WetSand.update (wetsand: WetSand) (msg: Types.Msg): Id WetSand := do
     return wetsand
 
 def WetSand.view (wetsand: WetSand): List Draw.Draw :=
-  [Draw.Draw.Rectangle wetsand.box Color.red]
+  [Draw.Draw.Rectangle wetsand.box Colors.red]
 
 instance : Types.Model WetSand where
   emit := WetSand.emit

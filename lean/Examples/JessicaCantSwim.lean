@@ -23,12 +23,12 @@ def getKeys: IO (List Keys.Keys) := do
 
 def draw (draw: Draw.Draw): IO Unit := do
   match draw with
-  | Draw.Draw.Text text x y size color =>
-    drawText text x y size color
-  | Draw.Draw.Rectangle ⟨ x, y, width, height ⟩ color =>
-    drawRectangleRec ⟨ x, y, width, height ⟩ color
-  | Draw.Draw.Circle ⟨ ⟨ x, y ⟩ , radius ⟩  color =>
-    drawCircleV ⟨ x, y ⟩ radius color
+  | Draw.Draw.Text text x y size ⟨ r, g, b, a ⟩ =>
+    drawText text x y size ⟨ r, g, b, a ⟩
+  | Draw.Draw.Rectangle ⟨ x, y, width, height ⟩ ⟨ r, g, b, a ⟩ =>
+    drawRectangleRec ⟨ x, y, width, height ⟩ ⟨ r, g, b, a ⟩
+  | Draw.Draw.Circle ⟨ ⟨ x, y ⟩ , radius ⟩  ⟨ r, g, b, a ⟩ =>
+    drawCircleV ⟨ x, y ⟩ radius ⟨ r, g, b, a ⟩
 
 def draws (drawings: List Draw.Draw): IO Unit := do
   for drawing in drawings do

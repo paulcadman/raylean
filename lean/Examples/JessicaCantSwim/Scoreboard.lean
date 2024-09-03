@@ -1,5 +1,3 @@
-import «Raylib»
-
 import Examples.JessicaCantSwim.Types
 
 namespace Scoreboard
@@ -39,8 +37,8 @@ def Scoreboard.emit (_scoreboard: Scoreboard): List Types.Msg := []
 def Scoreboard.view (scoreboard: Scoreboard): Id (List (Draw.Draw)) := do
   let scoreText := reprStr (scoreboard.score.toUInt64)
   if scoreboard.inOcean then
-    return [Draw.Draw.Text ("Game Over! Top Score: " ++ scoreText) 10 10 24 Color.black]
-  return [Draw.Draw.Text scoreText 10 10 24 Color.black]
+    return [Draw.Draw.Text ("Game Over! Top Score: " ++ scoreText) 10 10 24 Colors.black]
+  return [Draw.Draw.Text scoreText 10 10 24 Colors.black]
 
 instance : Types.Model Scoreboard where
   emit := Scoreboard.emit
