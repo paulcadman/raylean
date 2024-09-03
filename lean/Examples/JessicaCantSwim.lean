@@ -1,4 +1,4 @@
-import «Raylib»
+import «Raylean»
 
 import Examples.JessicaCantSwim.Rand
 import Examples.JessicaCantSwim.Shape
@@ -51,7 +51,7 @@ def main : IO Unit := do
     let drawings := game.view
     let ⟨ ⟨ ox, oy ⟩, ⟨ tx, ty ⟩, r, z ⟩ := game.camera
     renderFrame do
-      clearBackground Color.Raylib.lightgray
+      clearBackground Color.Raylean.lightgray
       renderWithCamera2D ⟨ ⟨ ox, oy ⟩, ⟨ tx, ty ⟩, r, z ⟩ (draws drawings)
   closeWindow
 
