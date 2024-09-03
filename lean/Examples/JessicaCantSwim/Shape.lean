@@ -15,4 +15,8 @@ structure Rectangle where
   /-- Rectangle height -/
   height : Float
 
+structure Circle where
+  position : Shape.Vector2
+  radius : Float
+
 end Shape
