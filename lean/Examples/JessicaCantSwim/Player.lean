@@ -1,5 +1,3 @@
-import Examples.JessicaCantSwim.Keys
-import Examples.JessicaCantSwim.Shape
 import Examples.JessicaCantSwim.Types
 
 namespace Player

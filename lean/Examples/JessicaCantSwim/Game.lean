@@ -1,10 +1,8 @@
 import Examples.JessicaCantSwim.Rand
-import Examples.JessicaCantSwim.Shape
-import Examples.JessicaCantSwim.Draw
 import Examples.JessicaCantSwim.Types
 import Examples.JessicaCantSwim.Camera
+
 import Examples.JessicaCantSwim.Collision
-import Examples.JessicaCantSwim.Keys
 import Examples.JessicaCantSwim.Player
 import Examples.JessicaCantSwim.Scoreboard
 import Examples.JessicaCantSwim.Ocean

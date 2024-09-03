@@ -1,10 +1,6 @@
 import Std
-
 import Examples.JessicaCantSwim.Rand
-import Examples.JessicaCantSwim.Shape
 import Examples.JessicaCantSwim.Types
-import Examples.JessicaCantSwim.Colors
-import Examples.JessicaCantSwim.Draw
 
 namespace Shells
 
