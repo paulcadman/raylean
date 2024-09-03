@@ -1,4 +1,3 @@
-import Examples.JessicaCantSwim.Shape
 import Examples.JessicaCantSwim.Types
 
 namespace Collision

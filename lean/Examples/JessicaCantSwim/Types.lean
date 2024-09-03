@@ -1,5 +1,4 @@
 import Examples.JessicaCantSwim.Keys
-import Examples.JessicaCantSwim.Shape
 import Examples.JessicaCantSwim.Draw
 
 namespace Types
