@@ -9,6 +9,9 @@ import Examples.JessicaCantSwim.Game
 
 namespace JessicaCantSwim
 
+open Raylean
+open Raylean.Types
+
 def getKeys: IO (List Keys.Keys) := do
   let mut keys := #[]
   if (← isKeyDown Key.down)
