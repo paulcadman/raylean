@@ -49,9 +49,10 @@ def main : IO Unit := do
     let events: List Types.Msg := List.map (λ key => Types.Msg.Key key) keys
     game := game.step delta (List.join [events, emits])
     let drawings := game.view
+    let ⟨ ⟨ ox, oy ⟩, ⟨ tx, ty ⟩, r, z ⟩ := game.camera
     renderFrame do
       clearBackground Color.Raylib.lightgray
-      renderWithCamera2D game.camera.camera (draws drawings)
+      renderWithCamera2D ⟨ ⟨ ox, oy ⟩, ⟨ tx, ty ⟩, r, z ⟩ (draws drawings)
   closeWindow
 
 end JessicaCantSwim
