@@ -33,7 +33,7 @@ def Shell.emit (shell: Shell): Types.Msg :=
   Types.Msg.Bounds (Types.ID.Shell shell.id) shell.bounds
 
 def Shell.view (s: Shell): Draw.Draw :=
-  Draw.Draw.Circle s.position s.radius Color.yellow
+  Draw.Draw.Circle ⟨ s.position, s.radius ⟩ Color.yellow
 
 structure Shells where
   private maxWidth : Float

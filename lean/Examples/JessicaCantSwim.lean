@@ -27,7 +27,7 @@ def draw (draw: Draw.Draw): IO Unit := do
     drawText text x y size color
   | Draw.Draw.Rectangle ⟨ x, y, width, height ⟩ color =>
     drawRectangleRec ⟨ x, y, width, height ⟩ color
-  | Draw.Draw.Circle ⟨ x, y ⟩ radius color =>
+  | Draw.Draw.Circle ⟨ ⟨ x, y ⟩ , radius ⟩  color =>
     drawCircleV ⟨ x, y ⟩ radius color
 
 def draws (drawings: List Draw.Draw): IO Unit := do

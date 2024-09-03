@@ -66,7 +66,7 @@ def Player.update (p: Player) (msg: Types.Msg): Player :=
 
 -- IO is required, since we are drawing
 def Player.view (p: Player): List Draw.Draw :=
-  [Draw.Draw.Circle p.position p.radius Color.green]
+  [Draw.Draw.Circle ⟨ p.position, p.radius ⟩ Color.green]
 
 instance : Types.Model Player where
   emit := Player.emit
