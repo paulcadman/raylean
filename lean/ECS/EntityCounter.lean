@@ -61,7 +61,7 @@ def newEntity_
   let ety ← nextEntity
   set' ety x
 
-def asNewEntity_
+def newEntityAs_
   (c : Type)
   [FamilyDef StorageFam c s]
   [FamilyDef ElemFam s t]
