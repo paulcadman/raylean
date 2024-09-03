@@ -1,5 +1,3 @@
-import Raylib.Types
-
 import Examples.JessicaCantSwim.Shape
 import Examples.JessicaCantSwim.Types
 

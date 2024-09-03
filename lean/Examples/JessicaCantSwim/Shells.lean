@@ -1,10 +1,9 @@
 import Std
 
-import «Raylib»
-
 import Examples.JessicaCantSwim.Rand
 import Examples.JessicaCantSwim.Shape
 import Examples.JessicaCantSwim.Types
+import Examples.JessicaCantSwim.Colors
 import Examples.JessicaCantSwim.Draw
 
 namespace Shells
@@ -33,7 +32,7 @@ def Shell.emit (shell: Shell): Types.Msg :=
   Types.Msg.Bounds (Types.ID.Shell shell.id) shell.bounds
 
 def Shell.view (s: Shell): Draw.Draw :=
-  Draw.Draw.Circle ⟨ s.position, s.radius ⟩ Color.yellow
+  Draw.Draw.Circle ⟨ s.position, s.radius ⟩ Colors.yellow
 
 structure Shells where
   private maxWidth : Float
@@ -72,7 +71,7 @@ def Shells.add (shells: Shells): Shells :=
   let (newNum2, newGen2) := newGen1.next
   let maxWidth := shells.oceanWidth.toUInt64.toNat
   let maxHeight := shells.oceanHeight.toUInt64.toNat
-  let location: Vector2 := ⟨ (newNum1 % maxWidth).toFloat, (newNum2 % maxHeight).toFloat ⟩
+  let location: Shape.Vector2 := ⟨ (newNum1 % maxWidth).toFloat, (newNum2 % maxHeight).toFloat ⟩
   let x := (shells.maxWidth - shells.oceanWidth) + location.x
   let coords := ⟨x, location.y⟩
   let newShell := Shell.init shells.nextID coords

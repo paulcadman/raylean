@@ -1,6 +1,3 @@
-import «Raylib»
-import Raylib.Types
-
 import Examples.JessicaCantSwim.Types
 import Examples.JessicaCantSwim.Rand
 
@@ -77,7 +74,7 @@ def Ocean.update (ocean: Ocean) (msg: Types.Msg): Ocean :=
   | _otherwise => ocean
 
 def Ocean.view (ocean: Ocean): List Draw.Draw :=
-  [Draw.Draw.Rectangle ocean.box Color.blue]
+  [Draw.Draw.Rectangle ocean.box Colors.blue]
 
 instance : Types.Model Ocean where
   emit := Ocean.emit
