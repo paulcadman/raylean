@@ -29,7 +29,7 @@ def init (maxWidth: Nat) (height: Nat) (r: Rand.Generator) : Ocean :=
 private def Ocean.id (_ocean: Ocean): Types.ID :=
   Types.ID.Ocean
 
-private def Ocean.box (ocean: Ocean): Rectangle :=
+private def Ocean.box (ocean: Ocean): Shape.Rectangle :=
   {
     x := ocean.maxWidth - ocean.width,
     y := 0,

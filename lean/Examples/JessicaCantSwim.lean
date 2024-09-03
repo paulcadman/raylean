@@ -1,6 +1,7 @@
 import «Raylib»
 
 import Examples.JessicaCantSwim.Rand
+import Examples.JessicaCantSwim.Shape
 import Examples.JessicaCantSwim.Types
 import Examples.JessicaCantSwim.Draw
 import Examples.JessicaCantSwim.Keys
@@ -24,10 +25,10 @@ def draw (draw: Draw.Draw): IO Unit := do
   match draw with
   | Draw.Draw.Text text x y size color =>
     drawText text x y size color
-  | Draw.Draw.Rectangle r color =>
-    drawRectangleRec r color
-  | Draw.Draw.Circle pos radius color =>
-    drawCircleV pos radius color
+  | Draw.Draw.Rectangle ⟨ x, y, width, height ⟩ color =>
+    drawRectangleRec ⟨ x, y, width, height ⟩ color
+  | Draw.Draw.Circle ⟨ x, y ⟩ radius color =>
+    drawCircleV ⟨ x, y ⟩ radius color
 
 def draws (drawings: List Draw.Draw): IO Unit := do
   for drawing in drawings do
@@ -36,7 +37,7 @@ def draws (drawings: List Draw.Draw): IO Unit := do
 def main : IO Unit := do
   let screenWidth: Nat := 800
   let screenHeight : Nat := 450
-  let startPosition : Vector2 := { x := 200, y := 200 }
+  let startPosition : Shape.Vector2 := { x := 200, y := 200 }
   initWindow screenWidth screenHeight "Jessica Can't Swim"
   setTargetFPS 60
   let rand ← Rand.init 123

@@ -1,6 +1,7 @@
 import Raylib.Types
 
 import Examples.JessicaCantSwim.Rand
+import Examples.JessicaCantSwim.Shape
 import Examples.JessicaCantSwim.Draw
 import Examples.JessicaCantSwim.Types
 import Examples.JessicaCantSwim.Camera
@@ -23,7 +24,7 @@ structure Game where
   wetsand: WetSand.WetSand
   shells: Shells.Shells
 
-def init (r: Rand.Generator) (position: Vector2) (screenWidth: Nat) (screenHeight: Nat): Game :=
+def init (r: Rand.Generator) (position: Shape.Vector2) (screenWidth: Nat) (screenHeight: Nat): Game :=
   let camera := Camera.init position screenWidth screenHeight
   let (oceanRand, shellsRand) := r.split
   {

@@ -1,17 +1,18 @@
 import «Raylib»
 
 import Examples.JessicaCantSwim.Keys
+import Examples.JessicaCantSwim.Shape
 import Examples.JessicaCantSwim.Types
 
 namespace Player
 
 structure Player where
-  private position : Vector2
+  private position : Shape.Vector2
   private speed: Float
   private radius : Float
   private direction : Vector2
 
-def init (position: Vector2): Player :=
+def init (position: Shape.Vector2): Player :=
   {
     position := position,
     speed := 200,
@@ -22,7 +23,7 @@ def init (position: Vector2): Player :=
 private def Player.id (_player: Player): Types.ID :=
   Types.ID.Player
 
-def Player.bounds (p: Player): List Rectangle :=
+def Player.bounds (p: Player): List Shape.Rectangle :=
   [{
     x := p.position.x - p.radius,
     y := p.position.y + p.radius,

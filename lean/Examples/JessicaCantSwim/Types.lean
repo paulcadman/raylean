@@ -1,4 +1,5 @@
 import Examples.JessicaCantSwim.Keys
+import Examples.JessicaCantSwim.Shape
 import Examples.JessicaCantSwim.Draw
 
 namespace Types
@@ -16,7 +17,7 @@ inductive ID where
 
 inductive Msg where
   -- Add your new Message here:
-  | Bounds (id: ID) (boxes: List Rectangle): Msg
+  | Bounds (id: ID) (boxes: List Shape.Rectangle): Msg
   | Collision (src: ID) (dst: ID) : Msg
   | Key (key: Keys.Keys) : Msg
   | Time (delta: Float): Msg
