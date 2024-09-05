@@ -16,6 +16,7 @@ def get
     let s ← Has.getStore c
     comp.constraint.mp <$> e.explGet s ety
 
+-- TODO: I want to call this `set` but it condflicts with a Prelude function
 /-- Writes a component to the given entity. Will overwrite existing components --/
 def set'
   {c s t : Type}
