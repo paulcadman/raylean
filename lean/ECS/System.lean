@@ -1,5 +1,7 @@
 import ECS.Basic
 
+namespace ECS
+
 /-- Run a system in a game world --/
 def runSystem (s : System w α) (world : w) : IO α := s.run world
 

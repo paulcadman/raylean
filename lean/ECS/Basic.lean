@@ -2,6 +2,8 @@ import Std
 
 import ECS.Family
 
+namespace ECS
+
 structure Entity where
   id : Nat
   deriving BEq, Hashable, Repr

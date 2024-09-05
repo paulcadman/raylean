@@ -2,6 +2,8 @@ import ECS.Basic
 import ECS.Store
 import ECS.System
 
+namespace ECS
+
 def global : Entity := ⟨0⟩
 
 structure EntityCounter where

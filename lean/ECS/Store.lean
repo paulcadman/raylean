@@ -3,6 +3,8 @@ import Std
 import ECS.Basic
 import ECS.Family
 
+namespace ECS
+
 structure MapStorage (c : Type) where
   ref : IO.Ref (Std.HashMap Entity c)
 
