@@ -16,5 +16,8 @@ structure Position where
 structure Velocity where
   val : Vector2
 
+structure OrbitPath where
+  val : Array Vector2
+
 -- Brings `World` and `initWorld` into scope
-makeWorldAndComponents Camera Position Velocity
+makeWorldAndComponents Camera Position Velocity OrbitPath
