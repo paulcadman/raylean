@@ -116,3 +116,64 @@ instance
     let sta : sa ← Has.getStore α
     let stb : sb ← Has.getStore β
     pure (sta, stb)
+
+
+/--
+A pseudocomponent indicating the absence of α
+
+Can be used as:
+
+  cmap (fun (a, Not b) => c)
+
+to iterate over entities with an `a` but no `b`
+
+It can also be used as:
+
+  cmap (fun a => Not : Not a)
+
+to delete every `a` component.
+--/
+inductive Not (α : Type) :=
+  | Not
+
+
+/--
+A pseudostore used to produce values of `Not a`. It inverts `explExists` and destroys instead of `explSet`
+--/
+structure NotStore (α : Type) where
+  val : α
+
+axiom ElemNotStore {s es : Type} [FamilyDef ElemFam s es] : ElemFam (NotStore s) = Not es
+instance [FamilyDef ElemFam s es] : FamilyDef ElemFam (NotStore s) (Not es) := ⟨ElemNotStore⟩
+
+axiom StorageNot {c s : Type} [FamilyDef StorageFam c s] : StorageFam (Not c) = NotStore s
+instance [FamilyDef StorageFam c s] : FamilyDef StorageFam (Not c) (NotStore s) := ⟨StorageNot⟩
+
+instance
+  [FamilyDef StorageFam c s]
+  [FamilyDef ElemFam s es]
+  [ca : @Component c s es _ _]
+  : @Component (Not c) (NotStore s) (Not es) _ _ where
+  constraint := congrArg Not ca.constraint
+
+instance
+  [FamilyDef StorageFam c s]
+  [@Has w c s _]
+  : @Has w (Not c) (NotStore s) _ where
+  getStore := NotStore.mk <$> Has.getStore c
+
+instance
+  [FamilyDef ElemFam s e]
+  [@ExplGet s e _]
+  : @ExplGet (NotStore s) (Not e) _ where
+  explGet _ _ := pure .Not
+  explExists sa ety := do
+    let (NotStore.mk st) := sa
+    not <$> ExplGet.explExists st ety
+
+instance
+  [FamilyDef ElemFam s e]
+  [ExplDestroy s] : @ExplSet (NotStore s) (Not e) _ where
+  explSet sa ety _ := do
+    let (NotStore.mk st) := sa
+    ExplDestroy.explDestroy st ety
