@@ -7,9 +7,6 @@ open ECS
 
 namespace Orbital
 
-structure Camera where
-  val : Camera2D
-
 structure Position where
   val : Vector2
 
@@ -19,5 +16,8 @@ structure Velocity where
 structure OrbitPath where
   val : Array Vector2
 
+structure Selectable where
+  selected : Bool
+
 -- Brings `World` and `initWorld` into scope
-makeWorldAndComponents Camera Position Velocity OrbitPath
+makeWorldAndComponents Position Velocity OrbitPath Selectable
