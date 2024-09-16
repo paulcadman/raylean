@@ -12,6 +12,8 @@ def screenWidth : Nat := 1920
 def screenHeight : Nat := 1080
 def center : Vector2 := ⟨screenWidth.toFloat / 2, screenHeight.toFloat / 2⟩
 def origin : Vector2 := ⟨0,0⟩
+def initPos : Vector2 := ⟨5,0⟩
+def initVel : Vector2 := ⟨0, 1.0 / initPos.length |>.sqrt⟩
 
 def mkOrbitingBody (initPosition initVelocity : Vector2) (selected : Bool := false): System World Unit :=
   newEntityAs_ (Position × Velocity × OrbitPath × Selectable) ⟨⟨initPosition⟩, ⟨initVelocity⟩, ⟨#[]⟩, ⟨selected⟩⟩
@@ -20,8 +22,6 @@ def mkStaticBody (position : Vector2) : System World Unit :=
   newEntityAs_ (Position × Not Velocity) (⟨position⟩, .Not)
 
 def init : System World Unit := do
-  let initPos : Vector2 := ⟨5,0⟩
-  let initVel : Vector2 := ⟨0, 1.0 / initPos.length |>.sqrt⟩
 
   mkStaticBody origin
   mkOrbitingBody (selected := true) initPos initVel
@@ -47,9 +47,25 @@ def changeSelectedVelocity (dv : Float) : Velocity × Selectable → Velocity
  | (Velocity.mk v, Selectable.mk true) => ⟨v.add <| v.mul (dv / v.length)⟩
  | (Velocity.mk v, Selectable.mk false) => ⟨v⟩
 
+def changePerpVelocity (dv : Float) : Velocity × Selectable → Velocity
+ | (Velocity.mk v, Selectable.mk true) =>
+   let normV : Vector2 := ⟨-v.y, v.x⟩
+   ⟨v.add <| normV.mul (dv / v.length)⟩
+ | (Velocity.mk v, Selectable.mk false) => ⟨v⟩
+
+def resetOrbitPath (_ : OrbitPath) : OrbitPath := OrbitPath.mk #[]
+
+def resetSelected : Position × Velocity × OrbitPath × Selectable → Position × Velocity × OrbitPath
+  | (_, _, _, Selectable.mk true) => (⟨initPos⟩, ⟨initVel⟩, OrbitPath.mk #[])
+  | (p, v, o, _) => (p, v, o)
+
 def update : System World Unit := do
-  if (← isKeyDown Key.right) then cmap (changeSelectedVelocity 0.01)
-  if (← isKeyDown Key.left) then cmap (changeSelectedVelocity (-0.01))
+  if (← isKeyDown Key.up) then cmap (changeSelectedVelocity 0.01)
+  if (← isKeyDown Key.down) then cmap (changeSelectedVelocity (-0.01))
+  if (← isKeyDown Key.right) then cmap (changePerpVelocity (0.01))
+  if (← isKeyDown Key.left) then cmap (changePerpVelocity (-0.01))
+  if (← isKeyDown Key.space) then cmap resetOrbitPath
+  if (← isKeyDown Key.r) then cmap resetSelected
   cmap (updateOrbitingBody (← getFrameTime))
 
 /-- Convert a Position to a point on the screen --/
