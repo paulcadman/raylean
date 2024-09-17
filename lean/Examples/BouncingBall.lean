@@ -68,9 +68,16 @@ def updateShape (dt : Float) (c : Config) : Position × Velocity → Position ×
 
 def removeAll (_ : Position) : Not Position := .Not
 
+def deleteAt (pos : Vector2) (radius : Float) : Position → System World (Option Position)
+  | ⟨p⟩ => do if
+    (← checkCollisionPointRec pos {x := p.x - radius, y := p.y - radius, width := 2 * radius, height := 2 * radius : Rectangle})
+    then return none else return (some ⟨p⟩)
+
 def update : System World Unit := do
   let c : Config ← get global
-  if (← isMouseButtonPressed MouseButton.left) then newBall (← getMousePosition)
+  if (← isMouseButtonPressed MouseButton.left) then
+    if (← isKeyDown Key.r) then cmapM (deleteAt (← getMousePosition) c.shapeRadius)
+                           else newBall (← getMousePosition)
   if (← isMouseButtonPressed MouseButton.right) then newSquare (← getMousePosition)
   if (← isKeyDown Key.space) then cmap removeAll
   cmap (updateShape (← getFrameTime) c)

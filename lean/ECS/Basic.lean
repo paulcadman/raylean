@@ -177,3 +177,51 @@ instance
   explSet sa ety _ := do
     let (NotStore.mk st) := sa
     ExplDestroy.explDestroy st ety
+
+/-- A pseudostore used to produce values of type `Option a`. It will always return `true` for `explExists`.
+Writing can both set and delete a component using `some` and `none` respectively.
+--/
+structure OptionStore (α : Type) where
+  val : α
+
+axiom ElemOptionStore {s es : Type} [FamilyDef ElemFam s es] : ElemFam (OptionStore s) = Option es
+instance [FamilyDef ElemFam s es] : FamilyDef ElemFam (OptionStore s) (Option es) := ⟨ElemOptionStore⟩
+
+axiom StorageOption {c s : Type} [FamilyDef StorageFam c s] : StorageFam (Option c) = OptionStore s
+instance [FamilyDef StorageFam c s] : FamilyDef StorageFam (Option c) (OptionStore s) := ⟨StorageOption⟩
+
+instance
+  [FamilyDef StorageFam c s]
+  [FamilyDef ElemFam s es]
+  [ca : @Component c s es _ _]
+  : @Component (Option c) (OptionStore s) (Option es) _ _ where
+  constraint := congrArg Option ca.constraint
+
+instance
+  [FamilyDef StorageFam c s]
+  [@Has w c s _]
+  : @Has w (Option c) (OptionStore s) _ where
+  getStore := OptionStore.mk <$> Has.getStore c
+
+instance
+  [FamilyDef ElemFam s e]
+  [@ExplGet s e _]
+  : @ExplGet (OptionStore s) (Option e) _ where
+  explGet sa ety := do
+    let (OptionStore.mk st) := sa
+    if (← ExplGet.explExists st ety)
+      then some <$> ExplGet.explGet st ety
+      else return none
+
+  explExists _ _ := return true
+
+instance
+  [FamilyDef ElemFam s e]
+  [ExplDestroy s]
+  [@ExplSet s e _]
+  : @ExplSet (OptionStore s) (Option e) _ where
+    explSet sa ety mv := do
+      let (OptionStore.mk st) := sa
+      match mv with
+        | none => ExplDestroy.explDestroy st ety
+        | some x => ExplSet.explSet st ety x
