@@ -225,3 +225,28 @@ instance
       match mv with
         | none => ExplDestroy.explDestroy st ety
         | some x => ExplSet.explSet st ety x
+
+/-- Instances for Unit.
+Useful when you want to 'do nothing' in a cmap
+--/
+axiom ElemUnitStore : ElemFam Unit = Unit
+instance : FamilyDef ElemFam Unit Unit := ⟨ElemUnitStore⟩
+
+axiom StorageUnit : StorageFam Unit = Unit
+instance : FamilyDef StorageFam Unit Unit := ⟨StorageUnit⟩
+
+instance : @Component Unit Unit Unit _ _ where
+  constraint := rfl
+
+instance : @Has w Unit Unit _ where
+  getStore := return ()
+
+instance : @ExplGet Unit Unit _ where
+  explGet _ _ := return ()
+  explExists _ _ := return true
+
+instance : @ExplSet Unit Unit _ where
+  explSet _ _ _ := return ()
+
+instance : ExplDestroy Unit where
+  explDestroy _ _ := return ()
