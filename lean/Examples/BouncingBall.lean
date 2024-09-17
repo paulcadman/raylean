@@ -79,6 +79,12 @@ def deleteAt' (pos : Vector2) (radius : Float) : Position × Entity → System W
     (← checkCollisionPointRec pos {x := p.x - radius, y := p.y - radius, width := 2 * radius, height := 2 * radius : Rectangle})
     then destroy (Position × Velocity) e else return ()
 
+/-- An alternative to `deleteAt` that uses a Sum to delete an entry --/
+def deleteAt'' (pos : Vector2) (radius : Float) : Position → System World (Unit ⊕ Not Position)
+  | ⟨p⟩ => do if
+    (← checkCollisionPointRec pos {x := p.x - radius, y := p.y - radius, width := 2 * radius, height := 2 * radius : Rectangle})
+    then return .inr .Not else return .inl ()
+
 def update : System World Unit := do
   let c : Config ← get global
   if (← isMouseButtonPressed MouseButton.left) then
