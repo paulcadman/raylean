@@ -3,3 +3,4 @@ import ECS.Store
 import ECS.EntityCounter
 import ECS.System
 import ECS.Elab
+import ECS.Components
