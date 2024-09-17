@@ -193,6 +193,98 @@ instance
         | none => ExplDestroy.explDestroy st ety
         | some x => ExplSet.explSet st ety x
 
+/-- An `Sum` component, a logical disjunction between two components.
+-- Getting an `a ⊕ b` will first attempt to get a `b` and return it as `inr b`, or if it does not exist, get an `a` as `inl a`.
+-- Can also be used to set one of two things.
+--/
+structure SumStore (sa sb : Type) where
+  sta : sa
+  stb : sb
+
+axiom ElemSumStore
+  {sa sb ea eb : Type}
+  [FamilyDef ElemFam sa ea]
+  [FamilyDef ElemFam sb eb]
+  : ElemFam (SumStore sa sb) = (ea ⊕ eb)
+instance
+  {sa sb ea eb : Type}
+  [FamilyDef ElemFam sa ea]
+  [FamilyDef ElemFam sb eb]
+  : FamilyDef ElemFam (SumStore sa sb) (ea ⊕ eb) := ⟨ElemSumStore⟩
+
+axiom StorageSum
+  {ca cb sa sb : Type}
+  [FamilyDef StorageFam ca sa]
+  [FamilyDef StorageFam cb sb]
+  : StorageFam (ca ⊕ cb) = SumStore sa sb
+instance
+  {ca cb sa sb : Type}
+  [FamilyDef StorageFam ca sa]
+  [FamilyDef StorageFam cb sb]
+  : FamilyDef StorageFam (ca ⊕ cb) (SumStore sa sb) := ⟨StorageSum⟩
+
+instance
+  [FamilyDef StorageFam ca sa]
+  [FamilyDef StorageFam cb sb]
+  [FamilyDef ElemFam sa ea]
+  [FamilyDef ElemFam sb eb]
+  [compA : @Component ca sa ea _ _]
+  [compB : @Component cb sb eb _ _]
+  : @Component (ca ⊕ cb) (SumStore sa sb) (ea ⊕ eb) _ _ where
+    constraint := by
+      rw [compA.constraint]
+      rw [compB.constraint]
+
+instance
+  [FamilyDef StorageFam ca sa]
+  [FamilyDef StorageFam cb sb]
+  [@Has w ca sa _]
+  [@Has w cb sb _]
+  : @Has w (ca ⊕ cb) (SumStore sa sb) _ where
+    getStore := do
+      let sta ← Has.getStore ca
+      let stb ← Has.getStore cb
+      return (SumStore.mk sta stb)
+
+instance
+  [FamilyDef ElemFam sa ea]
+  [FamilyDef ElemFam sb eb]
+  [@ExplGet sa ea _]
+  [@ExplGet sb eb _]
+  : @ExplGet (SumStore sa sb) (ea ⊕ eb) _ where
+  explGet s ety := do
+    let (SumStore.mk sta stb) := s
+    if (← ExplGet.explExists stb ety)
+      then .inr <$> ExplGet.explGet stb ety
+      else .inl <$> ExplGet.explGet sta ety
+
+  explExists s ety := do
+    let (SumStore.mk sa sb) := s
+    if (← ExplGet.explExists sb ety)
+      then return true
+      else ExplGet.explExists sa ety
+
+instance
+  [FamilyDef ElemFam sa ea]
+  [FamilyDef ElemFam sb eb]
+  [@ExplSet sa ea _]
+  [@ExplSet sb eb _]
+  : @ExplSet (SumStore sa sb) (ea ⊕ eb) _ where
+  explSet s ety v := do
+    let (SumStore.mk sta stb) := s
+    match v with
+      | .inr b => ExplSet.explSet stb ety b
+      | .inl a => ExplSet.explSet sta ety a
+
+instance
+  [ExplDestroy sa]
+  [ExplDestroy sb]
+  : ExplDestroy (SumStore sa sb) where
+  explDestroy s ety := do
+    let (SumStore.mk sta stb) := s
+    ExplDestroy.explDestroy sta ety
+    ExplDestroy.explDestroy stb ety
+
 /-- Instances for Unit.
 Useful when you want to 'do nothing' in a cmap
 --/
