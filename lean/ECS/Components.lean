@@ -231,6 +231,9 @@ instance : FamilyDef ElemFam EntityStore Entity := ⟨ElemEntityStore⟩
 axiom StorageEntity : StorageFam Entity = EntityStore
 instance : FamilyDef StorageFam Entity EntityStore := ⟨StorageEntity⟩
 
+instance : @Component Entity EntityStore Entity _ _ where
+  constraint := rfl
+
 instance : @Has w Entity EntityStore _ where
   getStore := return .EntityStore
 
