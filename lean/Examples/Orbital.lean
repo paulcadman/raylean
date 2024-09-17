@@ -18,14 +18,15 @@ def initVel : Vector2 := ⟨0, 1.0 / initPos.length |>.sqrt⟩
 def mkOrbitingBody (initPosition initVelocity : Vector2) (selected : Bool := false): System World Unit :=
   newEntityAs_ (Position × Velocity × OrbitPath × Selectable) ⟨⟨initPosition⟩, ⟨initVelocity⟩, ⟨#[]⟩, ⟨selected⟩⟩
 
-def mkStaticBody (position : Vector2) : System World Unit :=
-  newEntityAs_ (Position × Not Velocity) (⟨position⟩, .Not)
+def mkStaticBody (mass : Float) (position : Vector2) : System World Unit :=
+  newEntityAs_ (Mass × Position × Not Velocity) (⟨mass⟩, ⟨position⟩, .Not)
 
 def init : System World Unit := do
 
-  mkStaticBody origin
-  mkStaticBody (origin.add ⟨3, 3⟩)
-  mkStaticBody (origin.add ⟨-1, 3⟩)
+  mkStaticBody 1 origin
+  mkStaticBody 0.5 (origin.add ⟨3, 3⟩)
+  mkStaticBody 0.5 (origin.add ⟨-1, 3⟩)
+  mkStaticBody 0.5 (origin.add ⟨-4, -4⟩)
   mkOrbitingBody (selected := true) initPos initVel
   mkOrbitingBody ⟨-4, 0⟩ (initVel.mul (-1))
   mkOrbitingBody ⟨-0.8, -0.6⟩ (initVel.mul (-0.95))
@@ -36,23 +37,23 @@ def init : System World Unit := do
 
 def terminate : System World Unit := closeWindow
 
-def updateWithStatic (dt : Float) (staticBodies : Array Position) : Position × Velocity × OrbitPath → Position × Velocity × OrbitPath
+def updateWithStatic (dt : Float) (staticBodies : Array (Mass × Position)) : Position × Velocity × OrbitPath → Position × Velocity × OrbitPath
   | ⟨⟨po⟩, ⟨v⟩, ⟨o⟩⟩ => Id.run do
     -- compute the new velocity from contributions from each static body
     let mut vNew := v
-    for ⟨ps⟩ in staticBodies do
+    for (⟨m⟩, ⟨ps⟩) in staticBodies do
       -- p is the vector pointing from the oribiting body (po) to the static body (ps)
       let p := ps.sub po
       let pMag := p.length
-      let a := p |>.mul (1 / pMag^3)
+      let a := p |>.mul (m / pMag^3)
       vNew := vNew.add (a.mul dt)
     let pNew := po.add (vNew.mul dt)
     let oNew := o.push pNew
     (⟨pNew⟩, ⟨vNew⟩, ⟨oNew⟩)
 
 def updateOrbitingBody (dt : Float) : System World Unit := do
-  let static : Array (Position × Not Velocity) ← members
-  cmap (updateWithStatic dt (static.map Prod.fst))
+  let static : Array (Mass × Position × Not Velocity) ← members
+  cmap (updateWithStatic dt (static.map (fun (m, p, _) => (m, p))))
 
 def changeSelectedVelocity (dv : Float) : Velocity × Selectable → Velocity
  | (Velocity.mk v, Selectable.mk true) => ⟨v.add <| v.mul (dv / v.length)⟩
@@ -83,8 +84,8 @@ def update : System World Unit := do
 def toScreen (v : Vector2) : Vector2 :=
   v.mul 100 |>.add center
 
-def renderStaticBody (p : Position) : System World Unit :=
-    drawCircleV (toScreen p.val) 30 Color.red
+def renderStaticBody (mass : Mass) (p : Position) : System World Unit :=
+    drawCircleV (toScreen p.val) (mass.val * 30) Color.red
 
 def renderOrbitingBody (p : Position) (s : Selectable) : System World Unit :=
   drawCircleV (toScreen p.val) 10 (if s.selected then Color.green else Color.blue)
@@ -97,7 +98,7 @@ def renderOrbitPath (o : OrbitPath) : System World Unit :=
 def render : System World Unit :=
   renderFrame do
     clearBackground Color.black
-    cmapM_ (cx := Position × Not Velocity) <| fun (p, _) => renderStaticBody p
+    cmapM_ (cx := Mass × Position × Not Velocity) <| fun (m, p, _) => renderStaticBody m p
     cmapM_ (cx := Position × Velocity × Selectable) <| fun (p, _, s) => renderOrbitingBody p s
     cmapM_ renderOrbitPath
 

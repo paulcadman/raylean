@@ -16,8 +16,11 @@ structure Velocity where
 structure OrbitPath where
   val : Array Vector2
 
+structure Mass where
+  val : Float
+
 structure Selectable where
   selected : Bool
 
 -- Brings `World` and `initWorld` into scope
-makeWorldAndComponents Position Velocity OrbitPath Selectable
+makeWorldAndComponents Position Velocity OrbitPath Selectable Mass
