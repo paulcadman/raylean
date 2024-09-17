@@ -16,7 +16,7 @@ def get
     let s ← Has.getStore c
     comp.constraint.mp <$> e.explGet s ety
 
--- TODO: I want to call this `set` but it condflicts with a Prelude function
+-- TODO: I want to call this `set` but it conflicts with a Prelude function
 /-- Writes a component to the given entity. Will overwrite existing components --/
 def set'
   {c s t : Type}
@@ -40,7 +40,7 @@ def exists?
   [e : @ExplGet s t _]
   (ety : Entity) : System w Bool := do
   let s ← Has.getStore c
-  e.explExists  s ety
+  e.explExists s ety
 
 /-- Destroys component c for the given enitty --/
 def destroy
@@ -74,6 +74,19 @@ def modify'
     then do
       let x ← getX.explGet sx ety
       setY.explSet sy ety (compY.constraint.symm.mp (f (compX.constraint.mp x)))
+
+/-- Returns an array of all components with type cx --/
+def members
+  [FamilyDef StorageFam cx sx]
+  [FamilyDef ElemFam sx tx]
+  [compX : @Component cx sx tx _ _]
+  [@Has w cx sx _]
+  [getX : @ExplGet sx tx _]
+  [mX : ExplMembers sx] : System w (Array cx) := do
+    let stx ← Has.getStore cx
+    let sl ← mX.explMembers stx
+    let res : Array tx ← sl.mapM (getX.explGet stx) |> monadLift
+    return (res.map compX.constraint.mp)
 
 /-- Maps a function over all entities with a cx component and writes their cy --/
 def cmap
