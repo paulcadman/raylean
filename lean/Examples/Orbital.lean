@@ -24,6 +24,8 @@ def mkStaticBody (position : Vector2) : System World Unit :=
 def init : System World Unit := do
 
   mkStaticBody origin
+  mkStaticBody (origin.add ⟨3, 3⟩)
+  mkStaticBody (origin.add ⟨-1, 3⟩)
   mkOrbitingBody (selected := true) initPos initVel
   mkOrbitingBody ⟨-4, 0⟩ (initVel.mul (-1))
   mkOrbitingBody ⟨-0.8, -0.6⟩ (initVel.mul (-0.95))
@@ -34,14 +36,23 @@ def init : System World Unit := do
 
 def terminate : System World Unit := closeWindow
 
-def updateOrbitingBody (dt : Float) : Position × Velocity × OrbitPath → Position × Velocity × OrbitPath
-  | (Position.mk p, Velocity.mk v, OrbitPath.mk o) =>
-    let pMag := p.length
-    let a := p |>.mul (-1 / pMag^3)
-    let vNew := v.add (a.mul dt)
-    let pNew := p.add (vNew.mul dt)
+def updateWithStatic (dt : Float) (staticBodies : Array Position) : Position × Velocity × OrbitPath → Position × Velocity × OrbitPath
+  | ⟨⟨po⟩, ⟨v⟩, ⟨o⟩⟩ => Id.run do
+    -- compute the new velocity from contributions from each static body
+    let mut vNew := v
+    for ⟨ps⟩ in staticBodies do
+      -- p is the vector pointing from the oribiting body (po) to the static body (ps)
+      let p := ps.sub po
+      let pMag := p.length
+      let a := p |>.mul (1 / pMag^3)
+      vNew := vNew.add (a.mul dt)
+    let pNew := po.add (vNew.mul dt)
     let oNew := o.push pNew
     (⟨pNew⟩, ⟨vNew⟩, ⟨oNew⟩)
+
+def updateOrbitingBody (dt : Float) : System World Unit := do
+  let static : Array (Position × Not Velocity) ← members
+  cmap (updateWithStatic dt (static.map Prod.fst))
 
 def changeSelectedVelocity (dv : Float) : Velocity × Selectable → Velocity
  | (Velocity.mk v, Selectable.mk true) => ⟨v.add <| v.mul (dv / v.length)⟩
@@ -66,14 +77,14 @@ def update : System World Unit := do
   if (← isKeyDown Key.left) then cmap (changePerpVelocity (-0.01))
   if (← isKeyDown Key.space) then cmap resetOrbitPath
   if (← isKeyDown Key.r) then cmap resetSelected
-  cmap (updateOrbitingBody (← getFrameTime))
+  updateOrbitingBody (← getFrameTime)
 
 /-- Convert a Position to a point on the screen --/
 def toScreen (v : Vector2) : Vector2 :=
   v.mul 100 |>.add center
 
 def renderStaticBody (p : Position) : System World Unit :=
-    drawCircleV (p.val.add center) 30 Color.red
+    drawCircleV (toScreen p.val) 30 Color.red
 
 def renderOrbitingBody (p : Position) (s : Selectable) : System World Unit :=
   drawCircleV (toScreen p.val) 10 (if s.selected then Color.green else Color.blue)
