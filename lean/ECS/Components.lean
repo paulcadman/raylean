@@ -217,3 +217,23 @@ instance : @ExplSet Unit Unit _ where
 
 instance : ExplDestroy Unit where
   explDestroy _ _ := return ()
+
+/-- A pseudostore used to produce components of type `Entity`.
+It always returns `true` for `explExists`, and echoes back the entity argument for `explGet`.
+It can be used in e.g. `cmap $ fun (a, ety : Entity) -> b` to access the current entity.
+--/
+inductive EntityStore where
+  | EntityStore
+
+axiom ElemEntityStore : ElemFam EntityStore = Entity
+instance : FamilyDef ElemFam EntityStore Entity := ⟨ElemEntityStore⟩
+
+axiom StorageEntity : StorageFam Entity = EntityStore
+instance : FamilyDef StorageFam Entity EntityStore := ⟨StorageEntity⟩
+
+instance : @Has w Entity EntityStore _ where
+  getStore := return .EntityStore
+
+instance : @ExplGet EntityStore Entity _ where
+  explGet _ ety := return ety
+  explExists _ _ := return true
