@@ -41,7 +41,7 @@ elab "makeMapComponents" elemIdents:ident* : command => do
   for t in (← elemIdents.mapM Lean.resolveGlobalConstNoOverload) do
     elabCommand (← `(makeMapComponent $(mkIdent t)))
 
-elab "makeWorldAndComponents" elemIdents:ident* : command => do
+elab "makeWorldAndMapComponents" elemIdents:ident* : command => do
   -- identifiers exposed to the caller
   let worldStructName := "World"
   let world := mkIdent <| Name.mkSimple worldStructName

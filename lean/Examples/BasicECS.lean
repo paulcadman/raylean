@@ -11,7 +11,7 @@ structure Camera where
   camera : Camera3D
 
 -- Brings `World` and `initWorld` into scope
-makeWorldAndComponents Camera
+makeWorldAndMapComponents Camera
 
 def init : System World Unit := do
   let mut camera : Camera3D := {

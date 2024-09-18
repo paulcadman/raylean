@@ -23,4 +23,4 @@ structure Selectable where
   selected : Bool
 
 -- Brings `World` and `initWorld` into scope
-makeWorldAndComponents Position Velocity OrbitPath Selectable Mass
+makeWorldAndMapComponents Position Velocity OrbitPath Selectable Mass

@@ -23,7 +23,7 @@ inductive Circle :=
   | Circle
 
 -- Brings `World` and `initWorld` into scope
-makeWorldAndComponents Position Velocity Config Circle
+makeWorldAndMapComponents Position Velocity Config Circle
 
 def init : System World Unit := do
   let screenWidth := 800
