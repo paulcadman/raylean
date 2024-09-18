@@ -18,12 +18,13 @@ structure Config where
   screenWidth : Float
   screenHeight : Float
   velocity : Vector2
+  deriving Inhabited
 
 inductive Circle :=
   | Circle
 
 -- Brings `World` and `initWorld` into scope
-makeWorldAndMapComponents [Position, Velocity, Config, Circle]
+makeWorldAndComponents [Position, Velocity, Circle] [Config] []
 
 def init : System World Unit := do
   let screenWidth := 800
