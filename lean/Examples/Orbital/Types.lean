@@ -19,8 +19,8 @@ structure OrbitPath where
 structure Mass where
   val : Float
 
-structure Selectable where
-  selected : Bool
+inductive Player where
+  | Player
 
 -- Brings `World` and `initWorld` into scope
-makeWorldAndComponents Position Velocity OrbitPath Selectable Mass
+makeWorldAndComponents [Position, Velocity, OrbitPath, Mass] [] [Player]

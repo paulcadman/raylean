@@ -15,8 +15,11 @@ def origin : Vector2 := ⟨0,0⟩
 def initPos : Vector2 := ⟨5,0⟩
 def initVel : Vector2 := ⟨0, 1.0 / initPos.length |>.sqrt⟩
 
-def mkOrbitingBody (initPosition initVelocity : Vector2) (selected : Bool := false): System World Unit :=
-  newEntityAs_ (Position × Velocity × OrbitPath × Selectable) ⟨⟨initPosition⟩, ⟨initVelocity⟩, ⟨#[]⟩, ⟨selected⟩⟩
+def mkOrbitingBody (initPosition initVelocity : Vector2) : System World Unit :=
+  newEntityAs_ (Position × Velocity × OrbitPath) ⟨⟨initPosition⟩, ⟨initVelocity⟩, ⟨#[]⟩⟩
+
+def mkPlayer (initPosition initVelocity : Vector2) : System World Unit :=
+  newEntityAs_ (Position × Velocity × OrbitPath × Player) ⟨⟨initPosition⟩, ⟨initVelocity⟩, ⟨#[]⟩, .Player⟩
 
 def mkStaticBody (mass : Float) (position : Vector2) : System World Unit :=
   newEntityAs_ (Mass × Position × Not Velocity) (⟨mass⟩, ⟨position⟩, .Not)
@@ -27,7 +30,7 @@ def init : System World Unit := do
   mkStaticBody 0.5 (origin.add ⟨3, 3⟩)
   mkStaticBody 0.5 (origin.add ⟨-1, 3⟩)
   mkStaticBody 0.5 (origin.add ⟨-4, -4⟩)
-  mkOrbitingBody (selected := true) initPos initVel
+  mkPlayer initPos initVel
   mkOrbitingBody ⟨-4, 0⟩ (initVel.mul (-1))
   mkOrbitingBody ⟨-0.8, -0.6⟩ (initVel.mul (-0.95))
   mkOrbitingBody ⟨1, 1⟩ (initVel.mul (-1))
@@ -55,29 +58,26 @@ def updateOrbitingBody (dt : Float) : System World Unit := do
   let static : Array (Mass × Position × Not Velocity) ← members
   cmap (updateWithStatic dt (static.map (fun (m, p, _) => (m, p))))
 
-def changeSelectedVelocity (dv : Float) : Velocity × Selectable → Velocity
- | (Velocity.mk v, Selectable.mk true) => ⟨v.add <| v.mul (dv / v.length)⟩
- | (Velocity.mk v, Selectable.mk false) => ⟨v⟩
+def changeVelocity (dv : Float) : Velocity × Player → Velocity
+ | (⟨v⟩, _) => ⟨v.add <| v.mul (dv / v.length)⟩
 
-def changePerpVelocity (dv : Float) : Velocity × Selectable → Velocity
- | (Velocity.mk v, Selectable.mk true) =>
+def changePerpVelocity (dv : Float) : Velocity × Player → Velocity
+ | (⟨v⟩, _) =>
    let normV : Vector2 := ⟨-v.y, v.x⟩
    ⟨v.add <| normV.mul (dv / v.length)⟩
- | (Velocity.mk v, Selectable.mk false) => ⟨v⟩
 
 def resetOrbitPath (_ : OrbitPath) : OrbitPath := OrbitPath.mk #[]
 
-def resetSelected : Position × Velocity × OrbitPath × Selectable → Position × Velocity × OrbitPath
-  | (_, _, _, Selectable.mk true) => (⟨initPos⟩, ⟨initVel⟩, OrbitPath.mk #[])
-  | (p, v, o, _) => (p, v, o)
+def resetPlayer : Position × Velocity × OrbitPath × Player → Position × Velocity × OrbitPath
+  | (_, _, _, _) => (⟨initPos⟩, ⟨initVel⟩, OrbitPath.mk #[])
 
 def update : System World Unit := do
-  if (← isKeyDown Key.up) then cmap (changeSelectedVelocity 0.01)
-  if (← isKeyDown Key.down) then cmap (changeSelectedVelocity (-0.01))
+  if (← isKeyDown Key.up) then cmap (changeVelocity 0.01)
+  if (← isKeyDown Key.down) then cmap (changeVelocity (-0.01))
   if (← isKeyDown Key.right) then cmap (changePerpVelocity (0.01))
   if (← isKeyDown Key.left) then cmap (changePerpVelocity (-0.01))
   if (← isKeyDown Key.space) then cmap resetOrbitPath
-  if (← isKeyDown Key.r) then cmap resetSelected
+  if (← isKeyDown Key.r) then cmap resetPlayer
   updateOrbitingBody (← getFrameTime)
 
 /-- Convert a Position to a point on the screen --/
@@ -87,8 +87,8 @@ def toScreen (v : Vector2) : Vector2 :=
 def renderStaticBody (mass : Mass) (p : Position) : System World Unit :=
     drawCircleV (toScreen p.val) (mass.val * 30) Color.red
 
-def renderOrbitingBody (p : Position) (s : Selectable) : System World Unit :=
-  drawCircleV (toScreen p.val) 10 (if s.selected then Color.green else Color.blue)
+def renderOrbitingBody (p : Position) (c : Color) : System World Unit :=
+  drawCircleV (toScreen p.val) 10 c
 
 def renderOrbitPath (o : OrbitPath) : System World Unit :=
   let arr := o.val
@@ -99,7 +99,8 @@ def render : System World Unit :=
   renderFrame do
     clearBackground Color.black
     cmapM_ (cx := Mass × Position × Not Velocity) <| fun (m, p, _) => renderStaticBody m p
-    cmapM_ (cx := Position × Velocity × Selectable) <| fun (p, _, s) => renderOrbitingBody p s
+    cmapM_ (cx := Position × Velocity × Player) <| fun (p, _, _) => renderOrbitingBody p Color.green
+    cmapM_ (cx := Position × Velocity × Not Player) <| fun (p, _, _) => renderOrbitingBody p Color.blue
     cmapM_ renderOrbitPath
 
 def run : System World Unit := do
