@@ -46,7 +46,8 @@ def updateWithStatic (dt : Float) (staticBodies : Array (Mass × Position)) : Po
       -- p is the vector pointing from the oribiting body (po) to the static body (ps)
       let p := ps.sub po
       let pMag := p.length
-      let a := p |>.mul (m / pMag^3)
+      let softenedDistance := (pMag^2 + 0.25^2).sqrt
+      let a := p |>.mul (m / softenedDistance^3)
       vNew := vNew.add (a.mul dt)
     let pNew := po.add (vNew.mul dt)
     let oNew := o.push pNew
