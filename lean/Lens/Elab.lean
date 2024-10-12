@@ -2,7 +2,7 @@ import Lens.Basic
 
 import Lean
 
-namespace Elab
+namespace Lens
 
 /-
 makeLenses T` creates a lens for each field of the structure `T`.
@@ -42,9 +42,11 @@ elab "makeLenses" structIdent:ident : command => do
     elabCommand d
   elabCommand (← `(end $lensNs))
 
-end Elab
+end Lens
 
 namespace Example
+
+open Lens
 
 structure P where
   name : Nat
@@ -76,7 +78,7 @@ def exampleView' : IO Unit :=
   IO.println s!"Name: {personName}"
 
 def exampleSet' : IO Unit :=
-  let person := { name := { firstname := "Alice", surname := "H"}, age := 30 }
+  let person : Person' := { name := { firstname := "Alice", surname := "H"}, age := 30 }
   let updatedPerson := set (name ∘ firstname) "Bob" person
   IO.println s!"Updated name: {updatedPerson.name.firstname}"
 

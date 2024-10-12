@@ -143,3 +143,26 @@ def cmapM_
   for ety in sl do
     let x ← getX.explGet stx ety
     sys (compX.constraint.mp x)
+
+def cfold
+  [FamilyDef StorageFam cx sx]
+  [FamilyDef ElemFam sx tx]
+  [compX : @Component cx sx tx _ _]
+  [@Has w cx sx _]
+  [getX : @ExplGet sx tx _]
+  [mX : ExplMembers sx]
+  (f : a → cx → a) (accInit : a) : System w a := do
+  let stx ← Has.getStore cx
+  let sl ← mX.explMembers stx
+  sl.foldlM (fun a e => (f a ∘ compX.constraint.mp) <$> getX.explGet stx e) accInit
+
+/-- collect matching components into an array using the specified test/process function -/
+def collect
+  [FamilyDef StorageFam cx sx]
+  [FamilyDef ElemFam sx tx]
+  [@Component cx sx tx _ _]
+  [@Has w cx sx _]
+  [@ExplGet sx tx _]
+  [ExplMembers sx]
+  (f : cx → Option a) : System w (Array a) :=
+    cfold (fun acc e => f e |>.elim acc acc.push) #[]

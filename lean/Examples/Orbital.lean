@@ -1,19 +1,19 @@
 import Raylean
 import ECS
 import Examples.Orbital.Types
+import Raylean.Graphics2D
 
 open Raylean
 open Raylean.Types
 open ECS
+open Raylean.Graphics2D
 
 namespace Orbital
 
 def screenWidth : Nat := 1920
 def screenHeight : Nat := 1080
-def center : Vector2 := ⟨screenWidth.toFloat / 2, screenHeight.toFloat / 2⟩
-def origin : Vector2 := ⟨0,0⟩
 def initPos : Vector2 := ⟨5,0⟩
-def initVel : Vector2 := ⟨0, 1.0 / initPos.length |>.sqrt⟩
+def initVel : Vector2 := ⟨0, 1.0 / initPos.length |>.sqrt |>.neg⟩
 
 def mkOrbitingBody (initPosition initVelocity : Vector2) : System World Unit :=
   newEntityAs_ (Position × Velocity × OrbitPath) ⟨⟨initPosition⟩, ⟨initVelocity⟩, ⟨#[]⟩⟩
@@ -26,19 +26,17 @@ def mkStaticBody (mass : Float) (position : Vector2) : System World Unit :=
 
 def init : System World Unit := do
 
-  mkStaticBody 1 origin
-  mkStaticBody 0.5 (origin.add ⟨3, 3⟩)
-  mkStaticBody 0.5 (origin.add ⟨-1, 3⟩)
-  mkStaticBody 0.5 (origin.add ⟨-4, -4⟩)
+  mkStaticBody 1 ⟨0,0⟩
+  mkStaticBody 0.5 ⟨3, -3⟩
+  mkStaticBody 0.5 ⟨-1, -3⟩
+  mkStaticBody 0.5 ⟨-4, 4⟩
   mkPlayer initPos initVel
   mkOrbitingBody ⟨-4, 0⟩ (initVel.mul (-1))
-  mkOrbitingBody ⟨-0.8, -0.6⟩ (initVel.mul (-0.95))
-  mkOrbitingBody ⟨1, 1⟩ (initVel.mul (-1))
+  mkOrbitingBody ⟨-0.8, 0.6⟩ (initVel.mul (-0.95))
+  mkOrbitingBody ⟨1, 1⟩ initVel
 
   initWindow screenWidth screenHeight "Orbital"
   setTargetFPS 60
-
-def terminate : System World Unit := closeWindow
 
 def updateWithStatic (dt : Float) (staticBodies : Array (Mass × Position)) : Position × Velocity × OrbitPath → Position × Velocity × OrbitPath
   | ⟨⟨po⟩, ⟨v⟩, ⟨o⟩⟩ => Id.run do
@@ -74,34 +72,43 @@ def resetPlayer : Position × Velocity × OrbitPath × Player → Position × Ve
 def update : System World Unit := do
   if (← isKeyDown Key.up) then cmap (changeVelocity 0.01)
   if (← isKeyDown Key.down) then cmap (changeVelocity (-0.01))
-  if (← isKeyDown Key.right) then cmap (changePerpVelocity (0.01))
-  if (← isKeyDown Key.left) then cmap (changePerpVelocity (-0.01))
+  if (← isKeyDown Key.right) then cmap (changePerpVelocity (-0.01))
+  if (← isKeyDown Key.left) then cmap (changePerpVelocity (0.01))
   if (← isKeyDown Key.space) then cmap resetOrbitPath
   if (← isKeyDown Key.r) then cmap resetPlayer
   updateOrbitingBody (← getFrameTime)
 
-/-- Convert a Position to a point on the screen --/
-def toScreen (v : Vector2) : Vector2 :=
-  v.mul 100 |>.add center
+def translateScale (v : Vector2) : Vector2 :=
+  v.mul 100
 
-def renderStaticBody (mass : Mass) (p : Position) : System World Unit :=
-    drawCircleV (toScreen p.val) (mass.val * 30) Color.red
+def bodyScale (mass : Mass) : Float := mass.val * 30
 
-def renderOrbitingBody (p : Position) (c : Color) : System World Unit :=
-  drawCircleV (toScreen p.val) 10 c
+def staticBody (mass : Mass) (p : Position) : Picture :=
+  .circle (bodyScale mass) |>
+  .color .red |>
+  .translate (translateScale p.val)
 
-def renderOrbitPath (o : OrbitPath) : System World Unit :=
-  let arr := o.val
-  for (s, e) in arr.zip (arr.extract 1 arr.size) do
-    drawLineV (toScreen s) (toScreen e) Color.white
+def orbitingBody (p : Position) (c : Color) : Picture :=
+  .circle 10 |>
+  .color c |>
+  .translate (translateScale p.val)
+
+def orbitPath (o : OrbitPath) : Picture :=
+  .line (o.val.map (translateScale ·)) |> .color .white
+
+def gamePicture : System World Picture := do
+  let staticBodies ← collect (cx := Mass × Position × Not Velocity) <| fun (m, p, _) => staticBody m p |> some
+  let playerOrbitingBody ← collect (cx := Player × Position × Velocity) <| fun (_, p, _) => orbitingBody p .green |> some
+  let orbitingBodies ← collect (cx := Position × Velocity × Not Player) <| fun (p, _, _) => orbitingBody p .blue |> some
+  let orbitPaths ← collect <| fun o => orbitPath o |> some
+  return (.pictures (staticBodies ++ playerOrbitingBody ++ orbitingBodies ++ orbitPaths))
 
 def render : System World Unit :=
   renderFrame do
     clearBackground Color.black
-    cmapM_ (cx := Mass × Position × Not Velocity) <| fun (m, p, _) => renderStaticBody m p
-    cmapM_ (cx := Position × Velocity × Player) <| fun (p, _, _) => renderOrbitingBody p Color.green
-    cmapM_ (cx := Position × Velocity × Not Player) <| fun (p, _, _) => renderOrbitingBody p Color.blue
-    cmapM_ renderOrbitPath
+    renderPicture screenWidth.toFloat screenHeight.toFloat (← gamePicture)
+
+def terminate : System World Unit := closeWindow
 
 def run : System World Unit := do
   while not (← windowShouldClose) do

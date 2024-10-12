@@ -4,6 +4,8 @@ open Const
 def Lens (s t a b : Type) :=
   ∀ {f : Type → Type} [Functor f], (a → f b) → s → f t
 
+namespace Lens
+
 def view {s a : Type} (l : Lens s s a a) (x : s) : a :=
   (l (fun y => (y : Const a a)) x : Const a s)
 
@@ -15,7 +17,10 @@ def over {s t a b : Type} (l : Lens s t a b) (f : a → b) (x : s) : t :=
 
 infixl:50 " ^. " => flip view
 
+end Lens
+
 namespace Example
+open Lens
 
 structure Name where
   firstname : String
@@ -25,7 +30,7 @@ structure Person where
   name : Name
   age : Nat
 
-namespace Lens
+namespace Example.Lens
 
 def firstname : Lens Name Name String String :=
   fun {f} [Functor f] g p =>
@@ -35,9 +40,9 @@ def name : Lens Person Person Name Name :=
   fun {f} [Functor f] g p =>
     Functor.map (fun newName => { p with name := newName }) (g p.name)
 
-end Lens
+end Example.Lens
 
-open Lens
+open Example.Lens
 
 def exampleView : IO Unit :=
   let person : Person := { name := {firstname := "Alice", surname := "H"}, age := 30 }
