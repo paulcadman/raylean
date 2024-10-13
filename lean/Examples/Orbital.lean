@@ -79,30 +79,27 @@ def update : System World Unit := do
   if (← isKeyDown Key.r) then cmap resetPlayer
   updateOrbitingBody (← getFrameTime)
 
-def translateScale (v : Vector2) : Vector2 :=
-  v.mul 100
-
-def bodyScale (mass : Mass) : Float := mass.val * 30
+def bodyScale (mass : Mass) : Float := mass.val * 0.3
 
 def staticBody (mass : Mass) (p : Position) : Picture :=
   .circle (bodyScale mass) |>
   .color .red |>
-  .translate (translateScale p.val)
+  .translate p.val
 
 def orbitingBody (p : Position) (c : Color) : Picture :=
-  .circle 10 |>
+  .circle 0.1 |>
   .color c |>
-  .translate (translateScale p.val)
+  .translate p.val
 
 def orbitPath (o : OrbitPath) : Picture :=
-  .line (o.val.map (translateScale ·)) |> .color .white
+  .line o.val |> .color .white
 
 def gamePicture : System World Picture := do
   let staticBodies ← collect (cx := Mass × Position × Not Velocity) <| fun (m, p, _) => staticBody m p |> some
   let playerOrbitingBody ← collect (cx := Player × Position × Velocity) <| fun (_, p, _) => orbitingBody p .green |> some
   let orbitingBodies ← collect (cx := Position × Velocity × Not Player) <| fun (p, _, _) => orbitingBody p .blue |> some
-  let orbitPaths ← collect <| fun o => orbitPath o |> some
-  return (.pictures (staticBodies ++ playerOrbitingBody ++ orbitingBodies ++ orbitPaths))
+  let orbitPaths ← collect <| some ∘ orbitPath
+  return (.scale ⟨100, 100⟩ <| .pictures (staticBodies ++ playerOrbitingBody ++ orbitingBodies ++ orbitPaths))
 
 def render : System World Unit :=
   renderFrame do
