@@ -4,6 +4,11 @@
 #   just disableBundle=yes build
 disableBundle := ''
 
+lake_command := if os() == "linux" { "LEAN_CC=clang lake" } else { "lake" }
+
+# Snippet ported from: https://unix.stackexchange.com/a/325972
+linux_display_server := shell("loginctl show-session $(awk '/tty/ {print $1}' <(loginctl)) -p Type | cut -d= -f2")
+
 # Flags used to configure the lake build
 lake_config_opts := if disableBundle == "" { "-K bundle=on" } else { "" }
 
@@ -71,16 +76,17 @@ build_raylib:
             PLATFORM=PLATFORM_DESKTOP \
             RAYLIB_LIBTYPE=STATIC \
             RAYLIB_RELEASE_PATH={{static_lib_path}} \
+            USE_WAYLAND_DISPLAY={{if linux_display_server == 'wayland' { "TRUE" } else { "FALSE" } }} \
             CUSTOM_CFLAGS="{{raylib_custom_cflags}}"
     fi
 
 # build both the raylib library and the Lake project
 build: build_resvg build_raylib bundler
-    lake -R {{lake_config_opts}} build
+    {{lake_command}} -R {{lake_config_opts}} build
 
 # clean only the Lake project
 clean:
-    lake clean
+    {{lake_command}} clean
 
 clean_static_lib:
     rm -rf {{static_lib_path}}
