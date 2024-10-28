@@ -1,12 +1,17 @@
 import ECS.Basic
+import ECS.Store
 
 namespace ECS
 
 /-- Run a system in a game world --/
 def runSystem (s : System w α) (world : w) : IO α := s.run world
 
+/-- The entity used in `getGlobal` and `setGlobal`.-/
+def global : Entity := ⟨0⟩
+
 /-- Read a component --/
 def get
+  {w c s t : Type}
   [FamilyDef StorageFam c s]
   [FamilyDef ElemFam s t]
   [comp : @Component c s t _ _]
@@ -16,10 +21,17 @@ def get
     let s ← Has.getStore c
     comp.constraint.mp <$> e.explGet s ety
 
+def getGlobal
+  {w c : Type}
+  [FamilyDef StorageFam c (GlobalStorage c)]
+  [@Component c (GlobalStorage c) c _ _]
+  [@Has w c (GlobalStorage c) _]
+  [@ExplGet (GlobalStorage c) c _] : System w c := get global
+
 -- TODO: I want to call this `set` but it conflicts with a Prelude function
 /-- Writes a component to the given entity. Will overwrite existing components --/
 def set'
-  {c s t : Type}
+  {w c s t : Type}
   [FamilyDef StorageFam c s]
   [FamilyDef ElemFam s t]
   [comp : @Component c s t _ _]
@@ -29,6 +41,13 @@ def set'
   (x : c) : System w Unit := do
     let s ← Has.getStore c
     e.explSet s ety (comp.constraint.symm.mp x)
+
+def setGlobal
+  {w c : Type}
+  [FamilyDef StorageFam c (GlobalStorage c)]
+  [@Component c (GlobalStorage c) c _ _]
+  [@Has w c (GlobalStorage c) _]
+  (x : c) : System w Unit := set' global x
 
 /-- Returns whether the given entity has component c --/
 def exists?
