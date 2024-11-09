@@ -26,35 +26,38 @@ inductive Circle :=
 -- Brings `World` and `initWorld` into scope
 makeWorldAndComponents [Position, Velocity, Circle] [Config] []
 
-def init : System World Unit := do
-  let screenWidth := 800
-  let screenHeight := 600
-  set' global
+def screenWidth := 800
+def screenHeight := 600
+
+def initConfig  : Config :=
     { shapeRadius := 20
     , screenWidth := screenWidth.toFloat
     , screenHeight := screenHeight.toFloat
     , velocity := ⟨300, 250⟩
     : Config
     }
+
+def init : System World Unit := do
   initWindow screenWidth screenHeight "Bouncing ball"
+  setGlobal initConfig
   setTargetFPS 120
 
 def newBall (p : Vector2) : System World Unit := do
-  let c : Config ← get global
+  let c : Config ← getGlobal
   newEntityAs_ (Position × Velocity × Circle) (⟨p⟩, ⟨c.velocity⟩, .Circle)
 
 def newSquare (p : Vector2) : System World Unit := do
-  let c : Config ← get global
+  let c : Config ← getGlobal
   newEntityAs_ (Position × Velocity × Not Circle) (⟨p⟩, ⟨c.velocity.mul (-1)⟩, .Not)
 
 def renderBall : Position × Circle → System World Unit
   | (⟨p⟩, _) => do
-    let c : Config ← get global
+    let c : Config ← getGlobal
     drawCircleV p c.shapeRadius Color.Raylean.maroon
 
 def renderSquare : Position × Not Circle → System World Unit
   | (⟨p⟩, _) => do
-    let c : Config ← get global
+    let c : Config ← getGlobal
     drawRectangleRec ⟨p.x - c.shapeRadius, p.y - c.shapeRadius, 2 * c.shapeRadius, 2 * c.shapeRadius⟩ Color.Raylean.green
 
 def updateShape (dt : Float) (c : Config) : Position × Velocity → Position × Velocity
@@ -87,7 +90,7 @@ def deleteAt'' (pos : Vector2) (radius : Float) : Position → System World (Uni
     then return .inr .Not else return .inl ()
 
 def update : System World Unit := do
-  let c : Config ← get global
+  let c : Config ← getGlobal
   if (← isMouseButtonPressed MouseButton.left) then
     if (← isKeyDown Key.r) then cmapM (deleteAt (← getMousePosition) c.shapeRadius)
                            else newBall (← getMousePosition)
