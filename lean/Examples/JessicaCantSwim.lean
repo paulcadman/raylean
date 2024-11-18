@@ -50,7 +50,7 @@ def main : IO Unit := do
     let keys ← getKeys
     let emits := game.emit
     let events: List Types.Msg := List.map (λ key => Types.Msg.Key key) keys
-    game := game.step delta (List.join [events, emits])
+    game := game.step delta (List.flatten [events, emits])
     let drawings := game.view
     let ⟨ ⟨ ox, oy ⟩, ⟨ tx, ty ⟩, r, z ⟩ := game.camera
     renderFrame do
