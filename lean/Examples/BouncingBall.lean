@@ -20,7 +20,7 @@ structure Config where
   velocity : Vector2
   deriving Inhabited
 
-inductive Circle :=
+inductive Circle where
   | Circle
 
 -- Brings `World` and `initWorld` into scope

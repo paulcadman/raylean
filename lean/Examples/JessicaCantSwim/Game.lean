@@ -45,7 +45,7 @@ private def Game.update (game: Game) (msg: Types.Msg): Game :=
   }
 
 def Game.view (game: Game): List Draw.Draw :=
-  List.join [
+  List.flatten [
     -- Add your new Model here:
     game.wetsand.view,
     game.shells.view,
@@ -55,7 +55,7 @@ def Game.view (game: Game): List Draw.Draw :=
   ]
 
 def Game.emit (game: Game): List Types.Msg :=
-  List.join [
+  List.flatten [
     -- Add your new Model here:
     game.ocean.emit,
     game.wetsand.emit,

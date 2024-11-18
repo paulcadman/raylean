@@ -100,7 +100,7 @@ It can also be used as:
 
 to delete every `a` component.
 --/
-inductive Not (α : Type) :=
+inductive Not (α : Type) where
   | Not
 
 
