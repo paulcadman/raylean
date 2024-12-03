@@ -1,7 +1,6 @@
 import Raylean.Types
 import Raylean.Core
 import Batteries
-import Mathlib.Tactic.Linarith
 
 namespace Raylean.Image
 
@@ -49,16 +48,7 @@ def blend (c1 c2 : Color) : Color :=
   ⟩
 
 theorem blendIsAssocociative (c1 c2 c3 : Color) : blend c1 (blend c2 c3) = blend (blend c1 c2) c3 := by
-  unfold blend
-  simp
-  unfold blendRat
-  apply And.intro
-  · linarith
-  apply And.intro
-  · linarith
-  apply And.intro
-  · linarith
-  · linarith
+  sorry
 
 def over [BEq α] [Inhabited α] (a1 a2 : α) : α :=
   if a1 == default then a2 else a1

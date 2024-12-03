@@ -6,7 +6,6 @@ def optionUseBundle : Bool := get_config? bundle == some "on"
 def optionDisableResvg : Bool := get_config? resvg == some "disable"
 
 require batteries from git "https://github.com/leanprover-community/batteries.git" @ "v4.14.0"
-require mathlib from git "https://github.com/leanprover-community/mathlib4.git" @ "v4.14.0"
 
 package «raylean» where
   srcDir := "lean"
