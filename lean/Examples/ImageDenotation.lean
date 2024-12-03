@@ -5,8 +5,8 @@ open Raylean.Types
 
 namespace ImageDenotation
 
-def screenWidth := 80
-def screenHeight := 60
+def screenWidth := 200
+def screenHeight := 200
 
 def main : IO Unit := do
   initWindow screenWidth screenHeight "Image Denotation"

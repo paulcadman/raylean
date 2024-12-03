@@ -1,6 +1,7 @@
 import Raylean.Types
 import Raylean.Core
 import Batteries
+import Mathlib.Tactic.Linarith
 
 namespace Raylean.Image
 
@@ -35,20 +36,29 @@ def lift2 (f : α → β → γ) : (Image α → Image β → Image γ) :=
 
 def monochrome (a : α) := lift0 a
 
--- C = Ca*Aa*(1-Ab) + Cb*Ab
--- https://stackoverflow.com/questions/26317267/rgba-color-mixing-css
-def blendRat (c1 c2 alpha1 alpha2 : Rat) : Rat := c1 * alpha1 * (1 - alpha2) + c2 * alpha2
+-- R = S + D × (1 − S_a)
+-- https://ciechanow.ski/alpha-compositing/#compositing-done-right
+def blendRat (src dst alpha : Rat) : Rat := src + dst - dst * alpha
 
 def blend (c1 c2 : Color) : Color :=
   ⟨
-    blendRat c1.r c2.r c1.alpha c2.alpha,
-    blendRat c1.g c2.g c1.alpha c2.alpha,
-    blendRat c1.b c2.b c1.alpha c2.alpha,
-    blendRat 1 1 c1.alpha c2.alpha
+    blendRat c1.r c2.r c1.alpha,
+    blendRat c1.g c2.g c1.alpha,
+    blendRat c1.b c2.b c1.alpha,
+    blendRat c1.alpha c2.alpha c1.alpha
   ⟩
 
 theorem blendIsAssocociative (c1 c2 c3 : Color) : blend c1 (blend c2 c3) = blend (blend c1 c2) c3 := by
-  sorry
+  unfold blend
+  simp
+  unfold blendRat
+  apply And.intro
+  · linarith
+  apply And.intro
+  · linarith
+  apply And.intro
+  · linarith
+  · linarith
 
 def over [BEq α] [Inhabited α] (a1 a2 : α) : α :=
   if a1 == default then a2 else a1
