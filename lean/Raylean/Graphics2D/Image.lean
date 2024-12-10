@@ -188,11 +188,6 @@ theorem image_comp_map (g : α → β) (h : β → γ) (x : Image α):
   guard_target = (fun l => (h ∘ g) (x l)) = fun l => h (g (x l))
   simp
 
--- #find [] ++ ?x = ?x
--- #loogle [] ++ ?x = ?x
-
-#help tactic
-
 instance : LawfulFunctor Image where
   map_const := image_map_const
   id_map := image_id_map
