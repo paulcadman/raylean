@@ -14,8 +14,8 @@ def main : IO Unit := do
   while not (← windowShouldClose) do
     renderFrame do
       Image.render screenWidth screenHeight
-        (Image.blendi
-          (Image.monochrome Image.bluish)
-          (Image.monochrome Image.redish))
+        (Image.Image.sover
+          (Image.Image.monochrome Image.bluish)
+          (Image.Image.monochrome Image.redish))
       drawFPS 100 100
   closeWindow
