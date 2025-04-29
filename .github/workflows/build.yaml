@@ -31,7 +31,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: build project
-        run: just build
+        run: false
 
       - name: create release tarball
         run: |
