@@ -121,7 +121,7 @@ clean_resvg:
     cargo clean
 
 # clean both the raylib build and the Lake project
-# some other docs - fix typo
+# zzzzzz
 clean_all: clean clean_raylib clean_bundler clean_resvg clean_static_lib
 
 # run the demo executable
