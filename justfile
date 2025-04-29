@@ -102,6 +102,7 @@ build: build_resvg build_raylib bundler
 clean:
     lake clean
 
+# clean the static library path
 clean_static_lib:
     rm -rf {{static_lib_path}}
 
