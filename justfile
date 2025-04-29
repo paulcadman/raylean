@@ -123,13 +123,14 @@ clean_resvg:
     cargo clean
 
 # clean both the raylib build and the Lake project
-# zzzzzz
+# abcd
 clean_all: clean clean_raylib clean_bundler clean_resvg clean_static_lib
 
 # run the demo executable
 run *demoName: build
     .lake/build/bin/raylean {{demoName}}
 
+# build the bundler
 build-bundler:
     mkdir -p {{parent_directory(makebundle_output_path)}}
     lean -c {{makebundle_output_path}}.c {{makebundle_src_path}}
