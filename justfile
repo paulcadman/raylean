@@ -130,6 +130,7 @@ clean_all: clean clean_raylib clean_bundler clean_resvg clean_static_lib
 run *demoName: build
     .lake/build/bin/raylean {{demoName}}
 
+# build the bundler
 build-bundler:
     mkdir -p {{parent_directory(makebundle_output_path)}}
     lean -c {{makebundle_output_path}}.c {{makebundle_src_path}}
